@@ -249,88 +249,153 @@ const IssueToken = () => {
     setIsGenerating(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Get warden information from localStorage
+      const wardenInfo = JSON.parse(localStorage.getItem("wardenInfo"));
+      const token = localStorage.getItem("wardenToken");
       
-      if (isBulkMode) {
-        // Handle bulk token generation
-        const bulkTokens = tokenData.selectedStudents.map(student => {
-          const tokenStart = new Date(tokenData.validity_start);
-          const tokenEnd = new Date(tokenData.validity_end);
-          
-          const initials = student.name.split(' ').map(name => name[0]).join('');
-          const startDay = tokenStart.getDate().toString().padStart(2, '0');
-          const startMonth = (tokenStart.getMonth() + 1).toString().padStart(2, '0');
-          const randomNum = Math.floor(1000 + Math.random() * 9000);
-          
-          return {
-            roll: student.roll,
-            name: student.name,
-            validity: `${tokenStart.getDate()} ${tokenStart.toLocaleString('default', { month: 'short' })} - ${tokenEnd.getDate()} ${tokenEnd.toLocaleString('default', { month: 'short' })} ${tokenEnd.getFullYear()}`,
-            token: `${initials}${startMonth}${startDay}-${randomNum}`,
-            status: 'active'
-          };
-        });
-        
-        // Update recent issues with bulk tokens
-        setRecentIssues([...bulkTokens, ...recentIssues].slice(0, 10));
-        
-        // Show only the first token as preview
-        if (bulkTokens.length > 0) {
-          const firstStudent = tokenData.selectedStudents[0];
-          const tokenStart = new Date(tokenData.validity_start);
-          const tokenEnd = new Date(tokenData.validity_end);
-          
-          setTokenPreview({
-            token: bulkTokens[0].token,
-            student: firstStudent,
-            validFrom: tokenStart.toLocaleDateString(),
-            validTo: tokenEnd.toLocaleDateString(),
-            issueDate: new Date().toLocaleDateString(),
-            issuedBy: "Current Warden",
-            bulkCount: bulkTokens.length
-          });
-        }
-      } else {
-        // Create single token preview
-        const student = supervisedStudents.find(s => s.roll === tokenData.student_roll_number);
-        const tokenStart = new Date(tokenData.validity_start);
-        const tokenEnd = new Date(tokenData.validity_end);
-        
-        const initials = student ? student.name.split(' ').map(name => name[0]).join('') : 'XX';
-        const startDay = tokenStart.getDate().toString().padStart(2, '0');
-        const startMonth = (tokenStart.getMonth() + 1).toString().padStart(2, '0');
-        const randomNum = Math.floor(1000 + Math.random() * 9000);
-        
-        const generatedToken = {
-          token: `${initials}${startMonth}${startDay}-${randomNum}`,
-          student: student || { roll: tokenData.student_roll_number, name: "Unknown Student", course: "Unknown" },
-          validFrom: tokenStart.toLocaleDateString(),
-          validTo: tokenEnd.toLocaleDateString(),
-          issueDate: new Date().toLocaleDateString(),
-          issuedBy: "Current Warden"
-        };
-        
-        setTokenPreview(generatedToken);
-        
-        // Add to recent issues for demo purposes
-        const newIssue = {
-          roll: tokenData.student_roll_number,
-          name: student ? student.name : "Unknown",
-          validity: `${tokenStart.getDate()} ${tokenStart.toLocaleString('default', { month: 'short' })} - ${tokenEnd.getDate()} ${tokenEnd.toLocaleString('default', { month: 'short' })} ${tokenEnd.getFullYear()}`,
-          token: generatedToken.token,
-          status: 'active'
-        };
-        
-        setRecentIssues([newIssue, ...recentIssues.slice(0, 9)]);
+      if (!wardenInfo || !wardenInfo.id) {
+        throw new Error("Warden information not found");
       }
       
-      setIsGenerating(false);
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
+      
+      // Prepare data for API call
+      let requestBody = {
+        warden_id: wardenInfo.id,
+        secret_text: `WARDEN-CUSTOM-QR-CODE-${Date.now().toString().slice(-5)}`, // Generating a unique code
+      };
+      
+      // Handle both single and bulk mode
+      if (isBulkMode) {
+        // For bulk mode, collect student IDs from selectedStudents
+        requestBody.student_ids = tokenData.selectedStudents.map(student => student._id);
+      } else {
+        // For single mode, get the selected student's ID
+        const selectedStudent = supervisedStudents.find(s => s.roll === tokenData.student_roll_number);
+        if (!selectedStudent) {
+          throw new Error("Selected student not found");
+        }
+        requestBody.student_ids = [selectedStudent._id];
+      }
+      
+      // Add validity dates to the request
+      requestBody.validity_start = tokenData.validity_start;
+      requestBody.validity_end = tokenData.validity_end;
+      
+      // Make the API call
+      const response = await fetch('http://localhost:5000/api/token/generatetoken', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${await response.text()}`);
+      }
+      
+      const data = await response.json();
+      console.log('Token generation response:', data);
+      
+      // Handle successful token generation
+      if (data.success || data.message === "Token created successfully!") {
+     
+        // Store QR code data if available
+        const qrCodeData = data.qrCode || null;
+        
+        // Show token preview based on the response
+        if (isBulkMode) {
+          // For bulk mode, handle multiple tokens
+          const bulkTokens = data.tokens || [];
+          
+          // Update recent issues with bulk tokens
+          const newRecentIssues = bulkTokens.map(tokenInfo => ({
+            roll: tokenInfo.student_roll || '',
+            name: tokenInfo.student_name || '',
+            validity: `${new Date(tokenData.validity_start).toLocaleDateString()} - ${new Date(tokenData.validity_end).toLocaleDateString()}`,
+            token: tokenInfo.token_code || '',
+            status: 'active',
+            qrCode: tokenInfo.qrCode || qrCodeData
+          }));
+          
+          setRecentIssues([...newRecentIssues, ...recentIssues].slice(0, 10));
+          
+          // Show only the first token as preview if available
+          if (bulkTokens.length > 0) {
+            const firstToken = bulkTokens[0];
+            const firstStudent = tokenData.selectedStudents.find(s => s._id === firstToken.student_id) || 
+                                { name: firstToken.student_name, roll: firstToken.student_roll };
+                                
+            setTokenPreview({
+              token: firstToken.token_code,
+              student: firstStudent,
+              validFrom: new Date(tokenData.validity_start).toLocaleDateString(),
+              validTo: new Date(tokenData.validity_end).toLocaleDateString(),
+              issueDate: new Date().toLocaleDateString(),
+              issuedBy: wardenInfo.name || "Current Warden",
+              bulkCount: bulkTokens.length,
+              qrCode: firstToken.qrCode || qrCodeData
+            });
+          }
+        } else {
+          // For single mode
+          const tokenInfo = data.tokens && data.tokens[0];
+          const student = supervisedStudents.find(s => s.roll === tokenData.student_roll_number);
+          
+          setTokenPreview({
+            token: tokenInfo?.token_code || data.token || "Generated Token",
+            student: student || { 
+              roll: tokenInfo?.student_roll || tokenData.student_roll_number, 
+              name: tokenInfo?.student_name || "Unknown Student" 
+            },
+            validFrom: new Date(tokenData.validity_start).toLocaleDateString(),
+            validTo: new Date(tokenData.validity_end).toLocaleDateString(),
+            issueDate: new Date().toLocaleDateString(),
+            issuedBy: wardenInfo.name || "Current Warden",
+            qrCode: tokenInfo?.qrCode || qrCodeData || data.qrCode
+          });
+          
+          // Add to recent issues
+          const newIssue = {
+            roll: tokenInfo?.student_roll || student?.roll || tokenData.student_roll_number,
+            name: tokenInfo?.student_name || student?.name || "Unknown",
+            validity: `${new Date(tokenData.validity_start).toLocaleDateString()} - ${new Date(tokenData.validity_end).toLocaleDateString()}`,
+            token: tokenInfo?.token_code || data.token || "Generated Token",
+            status: 'active',
+            qrCode: tokenInfo?.qrCode || qrCodeData || data.qrCode
+          };
+          
+          setRecentIssues([newIssue, ...recentIssues.slice(0, 9)]);
+        }
+      } else {
+        throw new Error(data.message || 'Failed to generate token');
+      }
+      
     } catch (error) {
       console.error('Error generating token:', error);
+      alert(`Error: ${error.message}`);
+    } finally {
       setIsGenerating(false);
     }
   };
+  
+  // Add a function to download QR code
+  const downloadQRCode = (qrCode, tokenCode) => {
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = qrCode;
+    link.download = `token-${tokenCode || 'qrcode'}.png`;
+    
+    // Append to the document, click it, and remove it
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
 
   const viewIssuedTokens = () => {
     navigate('/issued-tokens');
@@ -386,6 +451,7 @@ const IssueToken = () => {
     );
   }
 
+  
   return (
     <div className="issuetoken-container">
       <div className="issuetoken-header">
@@ -587,48 +653,72 @@ const IssueToken = () => {
             </form>
           </div>
   
-          {/* Token Preview Section */}
-          {tokenPreview && (
-            <div className="issuetoken-preview">
-              <h3>Token Preview</h3>
-              <div className="issuetoken-preview-content">
-                <p><strong>Token:</strong> {tokenPreview.token}</p>
-                <p><strong>Student:</strong> {tokenPreview.student.name} ({tokenPreview.student.roll})</p>
-                <p><strong>Valid From:</strong> {tokenPreview.validFrom}</p>
-                <p><strong>Valid Until:</strong> {tokenPreview.validTo}</p>
-                <p><strong>Issue Date:</strong> {tokenPreview.issueDate}</p>
-                <p><strong>Issued By:</strong> {tokenPreview.issuedBy}</p>
-                {tokenPreview.bulkCount && (
-                  <p><strong>Total Tokens Generated:</strong> {tokenPreview.bulkCount}</p>
-                )}
-              </div>
-            </div>
-          )}
-  
-          {/* Recent Issues Section */}
-          <div className="issuetoken-recent">
-            <div className="issuetoken-recent-header">
-              <h3>Recently Issued Tokens</h3>
-              <button onClick={viewIssuedTokens}>View All</button>
-            </div>
-            <div className="issuetoken-recent-list">
-              {recentIssues.length > 0 ? (
-                recentIssues.map((issue, index) => (
-                  <div key={index} className="issuetoken-recent-item">
-                    <span className="issuetoken-recent-token">{issue.token}</span>
-                    <span className="issuetoken-recent-name">{issue.name}</span>
-                    <span className="issuetoken-recent-roll">{issue.roll}</span>
-                    <span className="issuetoken-recent-validity">{issue.validity}</span>
-                    <span className={`issuetoken-recent-status ${issue.status}`}>
-                      {issue.status}
-                    </span>
-                  </div>
-                ))
-              ) : (
-                <div className="issuetoken-no-recent">No tokens issued yet</div>
-              )}
-            </div>
+        {/* Token Preview Section */}
+{tokenPreview && (
+  <div className="issuetoken-preview">
+    <h3>Token Preview</h3>
+    <div className="issuetoken-preview-content">
+      <p><strong>Token:</strong> {tokenPreview.token}</p>
+      <p><strong>Student:</strong> {tokenPreview.student.name} ({tokenPreview.student.roll})</p>
+      <p><strong>Valid From:</strong> {tokenPreview.validFrom}</p>
+      <p><strong>Valid Until:</strong> {tokenPreview.validTo}</p>
+      <p><strong>Issue Date:</strong> {tokenPreview.issueDate}</p>
+      <p><strong>Issued By:</strong> {tokenPreview.issuedBy}</p>
+      {tokenPreview.bulkCount && (
+        <p><strong>Total Tokens Generated:</strong> {tokenPreview.bulkCount}</p>
+      )}
+      
+      {/* QR Code Display */}
+      {tokenPreview.qrCode && (
+        <div className="issuetoken-qr-container">
+          <h4>Access Token QR Code</h4>
+          <div className="issuetoken-qr-image">
+            <img src={tokenPreview.qrCode} alt="Token QR Code" />
           </div>
+          <button 
+            className="issuetoken-qr-download"
+            onClick={() => downloadQRCode(tokenPreview.qrCode, tokenPreview.token)}
+          >
+            Download QR Code
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+  
+         {/* Recent Issues Section */}
+<div className="issuetoken-recent">
+  <div className="issuetoken-recent-header">
+    <h3>Recently Issued Tokens</h3>
+    <button onClick={viewIssuedTokens}>View All</button>
+  </div>
+  <div className="issuetoken-recent-list">
+    {recentIssues.length > 0 ? (
+      recentIssues.map((issue, index) => (
+        <div key={index} className="issuetoken-recent-item">
+          <span className="issuetoken-recent-token">{issue.token}</span>
+          <span className="issuetoken-recent-name">{issue.name}</span>
+          <span className="issuetoken-recent-roll">{issue.roll}</span>
+          <span className="issuetoken-recent-validity">{issue.validity}</span>
+          <span className={`issuetoken-recent-status ${issue.status}`}>
+            {issue.status}
+          </span>
+          {issue.qrCode && (
+            <button 
+              className="issuetoken-recent-qr-btn"
+              onClick={() => downloadQRCode(issue.qrCode, issue.token)}
+            >
+              QR
+            </button>
+          )}
+        </div>
+      ))
+    ) : (
+      <div className="issuetoken-no-recent">No tokens issued yet</div>
+    )}
+  </div>
+</div>
         </div>
         
         {/* Student Selector Modal for Browse button */}

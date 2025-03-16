@@ -614,3 +614,69 @@
     gap: 0.5rem;
   }
 }
+/* Add these to your IssueToken.css file */
+
+.issuetoken-qr-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.issuetoken-qr-container h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.issuetoken-qr-image {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+}
+
+.issuetoken-qr-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.issuetoken-qr-download {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.issuetoken-qr-download:hover {
+  background-color: #3a7bc8;
+}
+
+/* Update recently issued tokens to show QR code button */
+.issuetoken-recent-item {
+  position: relative;
+}
+
+.issuetoken-recent-qr-btn {
+  background-color: transparent;
+  color: #4a90e2;
+  border: 1px solid #4a90e2;
+  padding: 2px 6px;
+  font-size: 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.issuetoken-recent-qr-btn:hover {
+  background-color: #f0f7ff;
+}
