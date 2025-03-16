@@ -69,7 +69,7 @@ const AddStudent = () => {
         <input type="number" name="year" placeholder="Year" value={student.year} onChange={handleChange} required className="add-student-input" />
         <input type="text" name="block" placeholder="Block" value={student.block} onChange={handleChange} required className="add-student-input" />
         <input type="text" name="room_number" placeholder="Room Number" value={student.room_number} onChange={handleChange} required className="add-student-input" />
-
+<input type="text" name="password" placeholder="Password" value={student.password} onChange={handleChange} required className="add-student-input" />
         <button type="submit" className="add-student-btn">Add Student</button>
       </form>
     </div>

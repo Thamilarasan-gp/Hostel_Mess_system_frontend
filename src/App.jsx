@@ -8,6 +8,7 @@ import TokenRecords from "./warden/TokenRecords";
 import StudentDashboard from "./Students/StudentDashboard";
 import NotFound from "./NotFound";
 import AddStudent from "./warden/AddStudent";
+import StudentLogin from "./Auth/StudentLogin";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route path="/tokenrecords" element={<TokenRecords/>} />
       <Route path="/studentdash" element={<StudentDashboard/>} />
       <Route path="/addstudent" element={<AddStudent/>} />
+      <Route path="/studentlogin" element={<StudentLogin/>} />
       <Route path="*" element={<NotFound/>} />
     </Routes>
   );

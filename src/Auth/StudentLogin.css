@@ -1,0 +1,128 @@
+/* Base container classes */
+.studentlogin-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f4f6;
+}
+  
+.studentlogin-box {
+    max-width: 28rem;
+    width: 100%;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    position: relative;
+}
+  
+/* Header styles */
+.studentlogin-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+  
+.studentlogin-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    text-align: center;
+}
+  
+/* Form styling */
+.studentlogin-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+  
+.studentlogin-form-group {
+    margin-bottom: 1rem;
+    width: 100%;
+    text-align: center;
+}
+  
+.studentlogin-form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+  
+.studentlogin-form-input {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    color: #1f2937;
+    background-color: #ffffff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    text-align: center;
+}
+  
+.studentlogin-form-input::placeholder {
+    text-align: center;
+}
+  
+.studentlogin-form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+  
+/* Button styling */
+.studentlogin-button-container {
+    width: 100%;
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+  
+.studentlogin-button {
+    width: 100%;
+    background-color: #3b82f6;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.625rem 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+    text-align: center;
+}
+  
+.studentlogin-button:hover {
+    background-color: #2563eb;
+}
+  
+.studentlogin-button:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+}
+  
+/* Error message styling */
+.studentlogin-error-message {
+    background-color: #fee2e2;
+    border-left: 4px solid #ef4444;
+    color: #b91c1c;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+  
+/* Footer text */
+.studentlogin-help-text {
+    text-align: center;
+    margin-top: 1rem;
+    width: 100%;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
