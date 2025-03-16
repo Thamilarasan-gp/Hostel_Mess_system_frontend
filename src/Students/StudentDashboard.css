@@ -1,0 +1,304 @@
+/* StudentDashboard.css */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 1rem auto;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .dashboard-content {
+    padding: 2rem;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .dashboard-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+  }
+  
+  .logout-button {
+    background-color: #ef4444;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .logout-button:hover {
+    background-color: #dc2626;
+  }
+  
+  .logout-button svg {
+    margin-right: 0.5rem;
+  }
+  
+  .welcome-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .welcome-text {
+    color: #4b5563;
+  }
+  
+  .date-text {
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+  
+  /* Grid layout for large screens */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  /* Common section styling */
+  .qr-scanner-section,
+  .history-section {
+    background-color: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 8px;
+    height: 100%;
+  }
+  
+  .qr-scanner-section {
+    background-color: #eff6ff;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e40af;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .section-icon {
+    margin-left: 0.5rem;
+    color: #1e40af;
+  }
+  
+  .token-display {
+    text-align: center;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+  
+  .token-display h3 {
+    margin-bottom: 1rem;
+    color: #1e40af;
+  }
+  
+  .token-text {
+    font-family: monospace;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #2563eb;
+    letter-spacing: 2px;
+  }
+  
+  .history-section .section-title {
+    color: #4b5563;
+  }
+  
+  /* QR Scanner Styling */
+  .scanner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 300px;
+  }
+  
+  .scanner-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    padding: 2rem 0;
+  }
+  
+  .scanner-icon {
+    margin-bottom: 1rem;
+    color: #1e40af;
+  }
+  
+  .scanner-text {
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .scan-button {
+    background-color: #2563eb;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .history-section {
+    background-color: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+  
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .history-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #4b5563;
+  }
+  
+  .calendar-toggle {
+    display: flex;
+    align-items: center;
+    color: #2563eb;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .calendar-toggle:hover {
+    color: #1d4ed8;
+  }
+  
+  .calendar-toggle svg {
+    margin-right: 0.25rem;
+  }
+  
+  .calendar-container {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .month-nav-button {
+    padding: 0.25rem;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .month-nav-button:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .month-title {
+    font-weight: 500;
+  }
+  
+  .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    text-align: center;
+  }
+  
+  .calendar-day {
+    height: 2rem;
+    width: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+  }
+  
+  .calendar-day:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .calendar-day-token {
+    background-color: #22c55e;
+    color: white;
+  }
+  
+  .calendar-legend {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+  }
+  
+  .legend-indicator {
+    width: 0.75rem;
+    height: 0.75rem;
+    background-color: #22c55e;
+    border-radius: 9999px;
+    margin-right: 0.25rem;
+  }
+  
+  .history-empty {
+    color: #6b7280;
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  .calendar-day-header {
+    font-weight: 600;
+    color: #4b5563;
+    padding: 0.5rem 0;
+  }
+
+  .calendar-day.empty {
+    background: transparent;
+  }
