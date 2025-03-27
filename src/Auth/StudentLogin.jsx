@@ -28,16 +28,21 @@ const StudentLogin = () => {
       const response = await axios.post('http://localhost:5000/api/auth/student/login', formData);
       
       if (response.data.success) {
-        localStorage.setItem('studentToken', response.data.token);
-        localStorage.setItem('studentData', JSON.stringify({
-          id: response.data.studentId,
-          name: response.data.name,
-          roll_number: response.data.roll_number,
-          block: response.data.block,
-          room_number: response.data.room_number
+        const { token, studentId, name, roll_number, block, room_number } = response.data;
+
+        // Store student token and details in local storage
+        localStorage.setItem('studentToken', token);
+        localStorage.setItem('studentInfo', JSON.stringify({
+          id: studentId,
+          name,
+          roll_number,
+          block,
+          room_number
         }));
-        
+
         navigate('/studentdash');
+        console.log(localStorage.getItem('studentInfo'));
+        console.log(localStorage.getItem('studentToken'));
       }
     } catch (error) {
       setError(

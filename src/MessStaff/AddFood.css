@@ -1,0 +1,121 @@
+.app-food-add-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 
+      0 10px 25px rgba(0, 0, 0, 0.05), 
+      0 20px 48px rgba(0, 0, 0, 0.03);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+      135deg, 
+      rgba(74, 144, 226, 0.05) 0%, 
+      rgba(61, 90, 254, 0.05) 100%
+    );
+  }
+  
+  .app-food-add-title {
+    text-align: center;
+    color: #4a90e2;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    font-weight: 700;
+    position: relative;
+  }
+  
+  .app-food-add-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background-color: #4a90e2;
+  }
+  
+  .app-food-add-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .app-food-form-group {
+    position: relative;
+  }
+  
+  .app-food-form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .app-food-form-select,
+  .app-food-form-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: 
+      border-color 0.3s ease, 
+      box-shadow 0.3s ease;
+  }
+  
+  .app-food-form-select:focus,
+  .app-food-form-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+  }
+  
+  .app-food-form-input::placeholder {
+    color: #999;
+  }
+  
+  .app-food-submit-button {
+    padding: 15px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 
+      background-color 0.3s ease,
+      transform 0.2s ease;
+    margin-top: 10px;
+  }
+  
+  .app-food-submit-button:hover {
+    background-color: #357abd;
+    transform: translateY(-2px);
+  }
+  
+  .app-food-submit-button:active {
+    transform: translateY(1px);
+  }
+  
+  /* Custom Datalist Styles */
+  .app-food-item-suggestions {
+    display: none;
+  }
+  
+  .app-food-select-option {
+    padding: 10px;
+  }
+  .app-food-form-input {
+    width: 94%; /* Adjust this value to your desired width */
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: 
+      border-color 0.3s ease, 
+      box-shadow 0.3s ease;
+  }
+  

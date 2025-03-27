@@ -77,6 +77,7 @@ const IssueToken = () => {
   
     fetchStudents();
   }, []);
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setTokenData({
@@ -104,6 +105,7 @@ const IssueToken = () => {
     // Clear token preview when form changes
     setTokenPreview(null);
   };
+  
   const handleStudentSearch = (query) => {
     if (query.length > 0) {
       // Filter students based on query - matching roll number or name
@@ -240,6 +242,7 @@ const IssueToken = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Fixed generateToken function to properly handle QR code display
   const generateToken = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -303,74 +306,84 @@ const IssueToken = () => {
       
       // Handle successful token generation
       if (data.success || data.message === "Token created successfully!") {
-     
-        // Store QR code data if available
-        const qrCodeData = data.qrCode || null;
         
-        // Show token preview based on the response
+        // For bulk mode
         if (isBulkMode) {
-          // For bulk mode, handle multiple tokens
           const bulkTokens = data.tokens || [];
+          console.log('Bulk tokens:', bulkTokens);
           
-          // Update recent issues with bulk tokens
-          const newRecentIssues = bulkTokens.map(tokenInfo => ({
-            roll: tokenInfo.student_roll || '',
-            name: tokenInfo.student_name || '',
-            validity: `${new Date(tokenData.validity_start).toLocaleDateString()} - ${new Date(tokenData.validity_end).toLocaleDateString()}`,
-            token: tokenInfo.token_code || '',
-            status: 'active',
-            qrCode: tokenInfo.qrCode || qrCodeData
-          }));
-          
-          setRecentIssues([...newRecentIssues, ...recentIssues].slice(0, 10));
-          
-          // Show only the first token as preview if available
           if (bulkTokens.length > 0) {
+            // Extract QR code data from the response
             const firstToken = bulkTokens[0];
-            const firstStudent = tokenData.selectedStudents.find(s => s._id === firstToken.student_id) || 
-                                { name: firstToken.student_name, roll: firstToken.student_roll };
-                                
+            const qrCodeData = firstToken.qrCode || data.qrCode;
+            
+            // Update token preview with QR code
             setTokenPreview({
-              token: firstToken.token_code,
-              student: firstStudent,
+              token: firstToken.token_code || "Generated Token",
+              student: tokenData.selectedStudents.find(s => s._id === firstToken.student_id) || 
+                      { name: firstToken.student_name, roll: firstToken.student_roll },
               validFrom: new Date(tokenData.validity_start).toLocaleDateString(),
               validTo: new Date(tokenData.validity_end).toLocaleDateString(),
               issueDate: new Date().toLocaleDateString(),
               issuedBy: wardenInfo.name || "Current Warden",
               bulkCount: bulkTokens.length,
-              qrCode: firstToken.qrCode || qrCodeData
+              qrCode: qrCodeData 
             });
+            
+            // Update recent issues
+            const newRecentIssues = bulkTokens.map(tokenInfo => ({
+              roll: tokenInfo.student_roll || '',
+              name: tokenInfo.student_name || '',
+              validity: `${new Date(tokenData.validity_start).toLocaleDateString()} - ${new Date(tokenData.validity_end).toLocaleDateString()}`,
+              token: tokenInfo.token_code || '',
+              status: 'active',
+              qrCode: tokenInfo.qrCode || qrCodeData
+            }));
+            
+            setRecentIssues([...newRecentIssues, ...recentIssues].slice(0, 10));
           }
         } else {
           // For single mode
-          const tokenInfo = data.tokens && data.tokens[0];
+          const tokenInfo = data.token || (data.tokens && data.tokens[0]) || {};
+          const qrCodeData = tokenInfo.qrCode || data.qrCode;
+          
+          if (!qrCodeData) {
+            console.error("QR code data not found in response");
+            throw new Error("QR code not found in server response");
+          }
+          
           const student = supervisedStudents.find(s => s.roll === tokenData.student_roll_number);
           
+          // Update token preview with QR code
           setTokenPreview({
-            token: tokenInfo?.token_code || data.token || "Generated Token",
+            token: tokenInfo.token_code || data.token || "Generated Token",
             student: student || { 
-              roll: tokenInfo?.student_roll || tokenData.student_roll_number, 
-              name: tokenInfo?.student_name || "Unknown Student" 
+              roll: tokenInfo.student_roll || tokenData.student_roll_number, 
+              name: tokenInfo.student_name || "Unknown Student" 
             },
             validFrom: new Date(tokenData.validity_start).toLocaleDateString(),
             validTo: new Date(tokenData.validity_end).toLocaleDateString(),
             issueDate: new Date().toLocaleDateString(),
             issuedBy: wardenInfo.name || "Current Warden",
-            qrCode: tokenInfo?.qrCode || qrCodeData || data.qrCode
+            qrCode: qrCodeData
           });
           
           // Add to recent issues
           const newIssue = {
-            roll: tokenInfo?.student_roll || student?.roll || tokenData.student_roll_number,
-            name: tokenInfo?.student_name || student?.name || "Unknown",
+            roll: tokenInfo.student_roll || student?.roll || tokenData.student_roll_number,
+            name: tokenInfo.student_name || student?.name || "Unknown",
             validity: `${new Date(tokenData.validity_start).toLocaleDateString()} - ${new Date(tokenData.validity_end).toLocaleDateString()}`,
-            token: tokenInfo?.token_code || data.token || "Generated Token",
+            token: tokenInfo.token_code || data.token || "Generated Token",
             status: 'active',
-            qrCode: tokenInfo?.qrCode || qrCodeData || data.qrCode
+            qrCode: qrCodeData
           };
           
           setRecentIssues([newIssue, ...recentIssues.slice(0, 9)]);
         }
+        
+        // Show success message
+        alert("Token generated successfully!");
+        
       } else {
         throw new Error(data.message || 'Failed to generate token');
       }
@@ -385,6 +398,10 @@ const IssueToken = () => {
   
   // Add a function to download QR code
   const downloadQRCode = (qrCode, tokenCode) => {
+    if (!qrCode) {
+      alert("QR code not available for download");
+      return;
+    }
     // Create a temporary link element
     const link = document.createElement('a');
     link.href = qrCode;
@@ -396,7 +413,6 @@ const IssueToken = () => {
     document.body.removeChild(link);
   };
   
-
   const viewIssuedTokens = () => {
     navigate('/issued-tokens');
   };
@@ -451,7 +467,6 @@ const IssueToken = () => {
     );
   }
 
-  
   return (
     <div className="issuetoken-container">
       <div className="issuetoken-header">
@@ -489,283 +504,284 @@ const IssueToken = () => {
                     className={`issuetoken-field ${errors.student_roll_number ? 'issuetoken-field--error' : ''}`}
                     placeholder="Enter student roll number"
                     value={tokenData.student_roll_number}
-                    onChange={handleChange}autoComplete="off"
+                    onChange={handleChange}
+                    autoComplete="off"
+                  />
+                  {tokenData.student_roll_number && (
+                    <button 
+                      type="button" 
+                      className="issuetoken-clear-btn"
+                      onClick={() => setTokenData({...tokenData, student_roll_number: ''})}
+                    >
+                      ×
+                    </button>
+                  )}
+                  <button 
+                    type="button"
+                    className="issuetoken-browse-btn"
+                    onClick={toggleStudentSelector}
+                  >
+                    Browse
+                  </button>
+                </div>
+                {errors.student_roll_number && (
+                  <p className="issuetoken-error">{errors.student_roll_number}</p>
+                )}
+                
+                {showSuggestions && suggestedStudents.length > 0 && (
+                  <div className="issuetoken-suggestions">
+                    {suggestedStudents.map(student => (
+                      <div 
+                        key={student.roll} 
+                        className="issuetoken-suggestion-item"
+                        onClick={() => selectStudent(student)}
+                      >
+                        <span className="issuetoken-suggestion-roll">{student.roll}</span>
+                        <span className="issuetoken-suggestion-name">{student.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              // Bulk mode
+              <div className="issuetoken-bulk-section">
+                <div className="issuetoken-bulk-header">
+                  <h3>Selected Students ({tokenData.selectedStudents.length})</h3>
+                  <div className="issuetoken-bulk-actions">
+                    <button type="button" onClick={selectAllStudents}>Select All</button>
+                    <button type="button" onClick={clearAllStudents}>Clear All</button>
+                  </div>
+                </div>
+                
+                {/* Search field for bulk mode */}
+                <div className="issuetoken-form-group">
+                  <label htmlFor="search_students">Search Students</label>
+                  <div className="issuetoken-input-wrapper">
+                    <input
+                      id="search_students"
+                      type="text"
+                      value={searchTerm}
+                      onChange={handleSearchChange}
+                      placeholder="Search by name, roll number, or department"
+                      className="issuetoken-field"
                     />
-                    {tokenData.student_roll_number && (
+                    {searchTerm && (
                       <button 
                         type="button" 
                         className="issuetoken-clear-btn"
-                        onClick={() => setTokenData({...tokenData, student_roll_number: ''})}
+                        onClick={() => {
+                          setSearchTerm('');
+                          setSuggestedStudents([]);
+                          setShowSuggestions(false);
+                        }}
                       >
                         ×
                       </button>
                     )}
-                    <button 
-                      type="button"
-                      className="issuetoken-browse-btn"
-                      onClick={toggleStudentSelector}
-                    >
-                      Browse
-                    </button>
                   </div>
-                  {errors.student_roll_number && (
-                    <p className="issuetoken-error">{errors.student_roll_number}</p>
-                  )}
-                  
-                  {showSuggestions && suggestedStudents.length > 0 && (
-                    <div className="issuetoken-suggestions">
-                      {suggestedStudents.map(student => (
+                </div>
+                
+                {/* Student suggestions list in bulk mode */}
+                {isBulkMode && searchTerm && (
+                  <div className="issuetoken-student-list">
+                    {filteredSupervisedStudents.length > 0 ? (
+                      filteredSupervisedStudents.map(student => (
                         <div 
                           key={student.roll} 
-                          className="issuetoken-suggestion-item"
+                          className={`issuetoken-student-item ${
+                            tokenData.selectedStudents.some(s => s.roll === student.roll) ? 'selected' : ''
+                          }`}
                           onClick={() => selectStudent(student)}
                         >
-                          <span className="issuetoken-suggestion-roll">{student.roll}</span>
-                          <span className="issuetoken-suggestion-name">{student.name}</span>
+                          <span className="issuetoken-student-name">{student.name}</span>
+                          <span className="issuetoken-student-roll">{student.roll}</span>
+                          {student.department && (
+                            <span className="issuetoken-student-dept">{student.department}</span>
+                          )}
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                // Bulk mode
-                <div className="issuetoken-bulk-section">
-                  <div className="issuetoken-bulk-header">
-                    <h3>Selected Students ({tokenData.selectedStudents.length})</h3>
-                    <div className="issuetoken-bulk-actions">
-                      <button type="button" onClick={selectAllStudents}>Select All</button>
-                      <button type="button" onClick={clearAllStudents}>Clear All</button>
-                    </div>
+                      ))
+                    ) : (
+                      <div className="issuetoken-no-results">No students found matching "{searchTerm}"</div>
+                    )}
                   </div>
-                  
-                  {/* Search field for bulk mode */}
-                  <div className="issuetoken-form-group">
-                    <label htmlFor="search_students">Search Students</label>
-                    <div className="issuetoken-input-wrapper">
-                      <input
-                        id="search_students"
-                        type="text"
-                        value={searchTerm}
-                        onChange={handleSearchChange}
-                        placeholder="Search by name, roll number, or department"
-                        className="issuetoken-field"
-                      />
-                      {searchTerm && (
-                        <button 
-                          type="button" 
-                          className="issuetoken-clear-btn"
-                          onClick={() => {
-                            setSearchTerm('');
-                            setSuggestedStudents([]);
-                            setShowSuggestions(false);
-                          }}
-                        >
-                          ×
-                        </button>
-                      )}
+                )}
+                
+                <div className="issuetoken-selected-students">
+                  {tokenData.selectedStudents.map(student => (
+                    <div key={student.roll} className="issuetoken-selected-student">
+                      <span>{student.name} ({student.roll})</span>
+                      <button type="button" onClick={() => removeSelectedStudent(student.roll)}>×</button>
                     </div>
-                  </div>
-                  
-                  {/* Student suggestions list in bulk mode */}
-                  {isBulkMode && searchTerm && (
-                    <div className="issuetoken-student-list">
-                      {filteredSupervisedStudents.length > 0 ? (
-                        filteredSupervisedStudents.map(student => (
-                          <div 
-                            key={student.roll} 
-                            className={`issuetoken-student-item ${
-                              tokenData.selectedStudents.some(s => s.roll === student.roll) ? 'selected' : ''
-                            }`}
-                            onClick={() => selectStudent(student)}
-                          >
-                            <span className="issuetoken-student-name">{student.name}</span>
-                            <span className="issuetoken-student-roll">{student.roll}</span>
-                            {student.department && (
-                              <span className="issuetoken-student-dept">{student.department}</span>
-                            )}
-                          </div>
-                        ))
-                      ) : (
-                        <div className="issuetoken-no-results">No students found matching "{searchTerm}"</div>
-                      )}
-                    </div>
-                  )}
-                  
-                  <div className="issuetoken-selected-students">
-                    {tokenData.selectedStudents.map(student => (
-                      <div key={student.roll} className="issuetoken-selected-student">
-                        <span>{student.name} ({student.roll})</span>
-                        <button type="button" onClick={() => removeSelectedStudent(student.roll)}>×</button>
-                      </div>
-                    ))}
-                  </div>
-                  {errors.selectedStudents && (
-                    <p className="issuetoken-error">{errors.selectedStudents}</p>
-                  )}
+                  ))}
                 </div>
-              )}
-  
-              <div className="issuetoken-date-group">
-                <div className="issuetoken-form-group">
-                  <label htmlFor="validity_start">Valid From</label>
-                  <input
-                    type="date"
-                    id="validity_start"
-                    name="validity_start"
-                    value={tokenData.validity_start}
-                    onChange={handleChange}
-                    min={new Date().toISOString().split('T')[0]}
-                  />
-                </div>
-  
-                <div className="issuetoken-form-group">
-                  <label htmlFor="validity_end">Valid Until</label>
-                  <input
-                    type="date"
-                    id="validity_end"
-                    name="validity_end"
-                    value={tokenData.validity_end}
-                    onChange={handleChange}
-                    min={tokenData.validity_start}
-                  />
-                  {errors.validity_end && (
-                    <p className="issuetoken-error">{errors.validity_end}</p>
-                  )}
-                </div>
+                {errors.selectedStudents && (
+                  <p className="issuetoken-error">{errors.selectedStudents}</p>
+                )}
               </div>
-  
-              <div className="issuetoken-actions">
-                <button 
-                  type="submit" 
-                  className="issuetoken-generate-btn"
-                  disabled={isGenerating}
-                >
-                  {isGenerating ? 'Generating...' : 'Generate Token'}
-                </button>
-                <button 
-                  type="button" 
-                  className="issuetoken-reset-btn"
-                  onClick={resetForm}
-                >
-                  Reset
-                </button>
-              </div>
-            </form>
-          </div>
-  
-        {/* Token Preview Section */}
-{tokenPreview && (
-  <div className="issuetoken-preview">
-    <h3>Token Preview</h3>
-    <div className="issuetoken-preview-content">
-      <p><strong>Token:</strong> {tokenPreview.token}</p>
-      <p><strong>Student:</strong> {tokenPreview.student.name} ({tokenPreview.student.roll})</p>
-      <p><strong>Valid From:</strong> {tokenPreview.validFrom}</p>
-      <p><strong>Valid Until:</strong> {tokenPreview.validTo}</p>
-      <p><strong>Issue Date:</strong> {tokenPreview.issueDate}</p>
-      <p><strong>Issued By:</strong> {tokenPreview.issuedBy}</p>
-      {tokenPreview.bulkCount && (
-        <p><strong>Total Tokens Generated:</strong> {tokenPreview.bulkCount}</p>
-      )}
-      
-      {/* QR Code Display */}
-      {tokenPreview.qrCode && (
-        <div className="issuetoken-qr-container">
-          <h4>Access Token QR Code</h4>
-          <div className="issuetoken-qr-image">
-            <img src={tokenPreview.qrCode} alt="Token QR Code" />
-          </div>
-          <button 
-            className="issuetoken-qr-download"
-            onClick={() => downloadQRCode(tokenPreview.qrCode, tokenPreview.token)}
-          >
-            Download QR Code
-          </button>
-        </div>
-      )}
-    </div>
-  </div>
-)}
-  
-         {/* Recent Issues Section */}
-<div className="issuetoken-recent">
-  <div className="issuetoken-recent-header">
-    <h3>Recently Issued Tokens</h3>
-    <button onClick={viewIssuedTokens}>View All</button>
-  </div>
-  <div className="issuetoken-recent-list">
-    {recentIssues.length > 0 ? (
-      recentIssues.map((issue, index) => (
-        <div key={index} className="issuetoken-recent-item">
-          <span className="issuetoken-recent-token">{issue.token}</span>
-          <span className="issuetoken-recent-name">{issue.name}</span>
-          <span className="issuetoken-recent-roll">{issue.roll}</span>
-          <span className="issuetoken-recent-validity">{issue.validity}</span>
-          <span className={`issuetoken-recent-status ${issue.status}`}>
-            {issue.status}
-          </span>
-          {issue.qrCode && (
-            <button 
-              className="issuetoken-recent-qr-btn"
-              onClick={() => downloadQRCode(issue.qrCode, issue.token)}
-            >
-              QR
-            </button>
-          )}
-        </div>
-      ))
-    ) : (
-      <div className="issuetoken-no-recent">No tokens issued yet</div>
-    )}
-  </div>
-</div>
-        </div>
-        
-        {/* Student Selector Modal for Browse button */}
-        {showStudentSelector && (
-          <div className="issuetoken-modal-backdrop">
-            <div className="issuetoken-modal">
-              <div className="issuetoken-modal-header">
-                <h3>Select Student</h3>
-                <button onClick={toggleStudentSelector}>×</button>
-              </div>
-              <div className="issuetoken-modal-search">
+            )}
+
+            <div className="issuetoken-date-group">
+              <div className="issuetoken-form-group">
+                <label htmlFor="validity_start">Valid From</label>
                 <input
-                  type="text"
-                  placeholder="Search students"
-                  value={searchTerm}
-                  onChange={handleSearchChange}
+                  type="date"
+                  id="validity_start"
+                  name="validity_start"
+                  value={tokenData.validity_start}
+                  onChange={handleChange}
+                  min={new Date().toISOString().split('T')[0]}
                 />
               </div>
-              <div className="issuetoken-modal-content">
-                {filteredSupervisedStudents.length > 0 ? (
-                  filteredSupervisedStudents.map(student => (
-                    <div 
-                      key={student.roll} 
-                      className="issuetoken-modal-item"
-                      onClick={() => {
-                        selectStudent(student);
-                        toggleStudentSelector();
-                      }}
-                    >
-                      <span className="issuetoken-modal-name">{student.name}</span>
-                      <span className="issuetoken-modal-roll">{student.roll}</span>
-                      {student.department && (
-                        <span className="issuetoken-modal-dept">{student.department}</span>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <div className="issuetoken-modal-empty">
-                    {searchTerm ? `No students found matching "${searchTerm}"` : 'No students available'}
-                  </div>
+
+              <div className="issuetoken-form-group">
+                <label htmlFor="validity_end">Valid Until</label>
+                <input
+                  type="date"
+                  id="validity_end"
+                  name="validity_end"
+                  value={tokenData.validity_end}
+                  onChange={handleChange}
+                  min={tokenData.validity_start}
+                />
+                {errors.validity_end && (
+                  <p className="issuetoken-error">{errors.validity_end}</p>
                 )}
               </div>
             </div>
+
+            <div className="issuetoken-actions">
+              <button 
+                type="submit" 
+                className="issuetoken-generate-btn"
+                disabled={isGenerating}
+              >
+                {isGenerating ? 'Generating...' : 'Generate Token'}
+              </button>
+              <button 
+                type="button" 
+                className="issuetoken-reset-btn"
+                onClick={resetForm}
+              >
+                Reset
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Token Preview Section */}
+        {tokenPreview && (
+          <div className="issuetoken-preview">
+            <h3>Token Preview</h3>
+            <div className="issuetoken-preview-content">
+              <p><strong>Token:</strong> {tokenPreview.token}</p>
+              <p><strong>Student:</strong> {tokenPreview.student.name} ({tokenPreview.student.roll})</p>
+              <p><strong>Valid From:</strong> {tokenPreview.validFrom}</p>
+              <p><strong>Valid Until:</strong> {tokenPreview.validTo}</p>
+              <p><strong>Issue Date:</strong> {tokenPreview.issueDate}</p>
+              <p><strong>Issued By:</strong> {tokenPreview.issuedBy}</p>
+              {tokenPreview.bulkCount && (
+                <p><strong>Total Tokens Generated:</strong> {tokenPreview.bulkCount}</p>
+              )}
+              
+              {/* QR Code Display */}
+              {tokenPreview.qrCode && (
+                <div className="issuetoken-qr-container">
+                  <h4>Access Token QR Code</h4>
+                  <div className="issuetoken-qr-image">
+                    <img src={tokenPreview.qrCode} alt="Token QR Code" />
+                  </div>
+                  <button 
+                    className="issuetoken-qr-download"
+                    onClick={() => downloadQRCode(tokenPreview.qrCode, tokenPreview.token)}
+                  >
+                    Download QR Code
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
+
+        {/* Recent Issues Section */}
+        <div className="issuetoken-recent">
+          <div className="issuetoken-recent-header">
+            <h3>Recently Issued Tokens</h3>
+            <button onClick={viewIssuedTokens}>View All</button>
+          </div>
+          <div className="issuetoken-recent-list">
+            {recentIssues.length > 0 ? (
+              recentIssues.map((issue, index) => (
+                <div key={index} className="issuetoken-recent-item">
+                  <span className="issuetoken-recent-token">{issue.token}</span>
+                  <span className="issuetoken-recent-name">{issue.name}</span>
+                  <span className="issuetoken-recent-roll">{issue.roll}</span>
+                  <span className="issuetoken-recent-validity">{issue.validity}</span>
+                  <span className={`issuetoken-recent-status ${issue.status}`}>
+                    {issue.status}
+                  </span>
+                  {issue.qrCode && (
+                    <button 
+                      className="issuetoken-recent-qr-btn"
+                      onClick={() => downloadQRCode(issue.qrCode, issue.token)}
+                    >
+                      QR
+                    </button>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="issuetoken-no-recent">No tokens issued yet</div>
+            )}
+          </div>
+        </div>
       </div>
-    );
-  };
-  
-  export default IssueToken;
+      
+      {/* Student Selector Modal for Browse button */}
+      {showStudentSelector && (
+        <div className="issuetoken-modal-backdrop">
+          <div className="issuetoken-modal">
+            <div className="issuetoken-modal-header">
+              <h3>Select Student</h3>
+              <button onClick={toggleStudentSelector}>×</button>
+            </div>
+            <div className="issuetoken-modal-search">
+              <input
+                type="text"
+                placeholder="Search students"
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+            </div>
+            <div className="issuetoken-modal-content">
+              {filteredSupervisedStudents.length > 0 ? (
+                filteredSupervisedStudents.map(student => (
+                  <div 
+                    key={student.roll} 
+                    className="issuetoken-modal-item"
+                    onClick={() => {
+                      selectStudent(student);
+                      toggleStudentSelector();
+                    }}
+                  >
+                    <span className="issuetoken-modal-name">{student.name}</span>
+                    <span className="issuetoken-modal-roll">{student.roll}</span>
+                    {student.department && (
+                      <span className="issuetoken-modal-dept">{student.department}</span>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="issuetoken-modal-empty">
+                  {searchTerm ? `No students found matching "${searchTerm}"` : 'No students available'}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default IssueToken;

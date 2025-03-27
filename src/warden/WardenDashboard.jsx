@@ -71,6 +71,9 @@ const WardenDashboard = () => {
   const navigateToAddStudent = () => {
     navigate('/addstudent');
   };
+  const navigateToAddMess = () => {
+    navigate('/addMess');
+  };
 
   return (
     <div className="dashboard-container">
@@ -79,6 +82,7 @@ const WardenDashboard = () => {
         <div className="user-info">
           <span className="user-name">Welcome, Warden</span>
           <button className="logout-button">Logout</button>
+          <button className="Addmess-button"  onClick={navigateToAddMess}>Add Mess</button>
         </div>
       </header>
 

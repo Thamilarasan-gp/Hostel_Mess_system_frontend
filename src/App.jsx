@@ -9,6 +9,16 @@ import StudentDashboard from "./Students/StudentDashboard";
 import NotFound from "./NotFound";
 import AddStudent from "./warden/AddStudent";
 import StudentLogin from "./Auth/StudentLogin";
+import AddTimetable from "./MessStaff/AddTimetable";
+import AddFood from "./MessStaff/AddFood";
+import FoodList from "./MessStaff/FoodList";
+import AddReview from "./MessStaff/AddReview";
+import ReviewList from "./MessStaff/ReviewList";
+import AddMess from "./warden/AddMess";
+import MessDashboard from "./MessStaff/MessDashboard";
+import LoginMess from "./Auth/LoginMess";
+import GetFoodItems from "./Students/GetFoodItems";
+import ReviewStatus from "./Students/ReviewStatus";
 
 function App() {
   return (
@@ -22,6 +32,18 @@ function App() {
       <Route path="/studentdash" element={<StudentDashboard/>} />
       <Route path="/addstudent" element={<AddStudent/>} />
       <Route path="/studentlogin" element={<StudentLogin/>} />
+     
+      <Route path="/footlist" element={<FoodList/>} />
+        <Route path="/add-timetable" element={<AddTimetable />} />
+        <Route path="/add-food" element={<AddFood />} />
+        <Route path="/add-review/:foodItemId" element={<AddReview />} />
+        <Route path="/reviews/:foodItemId" element={<ReviewList />} />
+   <Route path="/addMess" element={<AddMess/>}/>
+   <Route path="/mess-dashboard" element={<MessDashboard/>}/>
+    <Route path="/messLogin" element={<LoginMess/>}/>
+     <Route path="/getfooditems" element={<GetFoodItems/>}/>
+       <Route path="/reviewsstatus/:foodItemId" element={<ReviewStatus/>} />
+    
       <Route path="*" element={<NotFound/>} />
     </Routes>
   );

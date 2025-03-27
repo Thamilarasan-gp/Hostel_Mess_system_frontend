@@ -1,100 +1,197 @@
-/* QRGenerate.css */
+/* TokenQrcode.css */
+.token-qrcode-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 
-.qr-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    background-color: #f5f7fa;
-    font-family: 'Arial', sans-serif;
-  }
-  
-  .qr-card {
-    width: 100%;
-    max-width: 400px;
-    padding: 25px;
-    border-radius: 12px;
-    background-color: white;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  .qr-title {
-    margin-top: 0;
-    margin-bottom: 24px;
-    color: #333;
-    font-size: 24px;
-    font-weight: 600;
-  }
-  
-  .qr-text {
-    margin: 12px 0;
-    color: #555;
-    font-size: 16px;
-    line-height: 1.5;
-  }
-  
-  .qr-button {
-    width: 100%;
-    padding: 12px 0;
-    margin-top: 16px;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .generate-btn {
-    background-color: #4a6cf7;
-    color: white;
-  }
-  
-  .generate-btn:hover {
-    background-color: #3a5ad9;
-  }
-  
-  .download-btn {
-    background-color: #32c27d;
-    color: white;
-  }
-  
-  .download-btn:hover {
-    background-color: #28a067;
-  }
-  
-  .qr-code {
-    margin-top: 24px;
-    display: flex;
+.token-qrcode-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.token-qrcode-header h1 {
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.token-qrcode-header p {
+  color: #666;
+  font-size: 16px;
+}
+
+.token-qrcode-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.token-qrcode-details {
+  flex: 1;
+  min-width: 300px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.token-qrcode-details p {
+  margin: 10px 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.token-qrcode-status {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.token-qrcode-status.active {
+  background-color: #e6f7e6;
+  color: #2e7d32;
+}
+
+.token-qrcode-status.expired {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.token-qrcode-status.revoked {
+  background-color: #efebe9;
+  color: #6d4c41;
+}
+
+.token-qrcode-image-container {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.token-qrcode-image {
+  margin: 10px 0 20px;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+}
+
+.token-qrcode-image img {
+  max-width: 250px;
+  height: auto;
+}
+
+.token-qrcode-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.token-qrcode-download-btn,
+.token-qrcode-print-btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.token-qrcode-download-btn {
+  background-color: #1976d2;
+  color: white;
+}
+
+.token-qrcode-download-btn:hover {
+  background-color: #1565c0;
+}
+
+.token-qrcode-print-btn {
+  background-color: #546e7a;
+  color: white;
+}
+
+.token-qrcode-print-btn:hover {
+  background-color: #455a64;
+}
+
+/* Loading state */
+.token-qrcode-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+}
+
+.token-qrcode-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #1976d2;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error state */
+.token-qrcode-error,
+.token-qrcode-not-found {
+  text-align: center;
+  padding: 30px;
+  color: #d32f2f;
+}
+
+.token-qrcode-error h2,
+.token-qrcode-not-found h2 {
+  margin-bottom: 10px;
+}
+
+.token-qrcode-retry-btn {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.token-qrcode-retry-btn:hover {
+  background-color: #d32f2f;
+}
+
+.token-qrcode-missing {
+  padding: 30px;
+  text-align: center;
+  color: #ff6d00;
+  font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .token-qrcode-content {
     flex-direction: column;
-    align-items: center;
   }
   
-  .qr-code svg {
-    margin-bottom: 16px;
-    padding: 12px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  .token-qrcode-details,
+  .token-qrcode-image-container {
+    width: 100%;
   }
-  
-  @media (max-width: 480px) {
-    .qr-card {
-      padding: 20px;
-    }
-    
-    .qr-title {
-      font-size: 20px;
-    }
-    
-    .qr-text {
-      font-size: 14px;
-    }
-    
-    .qr-button {
-      font-size: 14px;
-      padding: 10px 0;
-    }
-  }
+}
