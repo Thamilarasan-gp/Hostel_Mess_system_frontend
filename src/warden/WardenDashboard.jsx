@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './WardenDashboard.module.css';
 import IssueToken from './IssueToken';
-import StudentList from '../warden/Studentlist';
+import StudentList from './Studentlist';
 import TokenRecords from './TokenRecords';
 import MessAnalytics from './MessAnalytics/MessAnalytics';
 import Feedback from './MessAnalytics/Feedback';
