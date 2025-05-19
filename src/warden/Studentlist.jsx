@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./studentlist.css";
-
+import { API_BASE_URL } from "../apiurl";
 const StudentList = () => {
   const [students, setStudents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,7 +16,7 @@ const StudentList = () => {
   
         const token = localStorage.getItem("wardenToken");
   
-        const response = await fetch(`http://localhost:5000/api/student/under-warden?wardenId=${wardenInfo.id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/student/under-warden?wardenId=${wardenInfo.id}`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,

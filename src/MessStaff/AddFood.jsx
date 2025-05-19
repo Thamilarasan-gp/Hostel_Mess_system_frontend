@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./AddFood.css";
-
+import { API_BASE_URL } from "../apiurl";
 function AddFood() {
   const [day, setDay] = useState("Monday");
   const [slot, setSlot] = useState("breakfast");
@@ -23,7 +23,7 @@ console.log(messid);
           return;
         }
         const response = await axios.get(
-          `http://localhost:5000/api/timetable/getTimetable/${messid}`
+          `${API_BASE_URL}/api/timetable/getTimetable/${messid}`
         );
         setTimetable(response.data.timetable || {}); 
       } catch (error) {
@@ -38,7 +38,7 @@ console.log(messid);
       try {
         if (!messid) return;
         const response = await axios.get(
-          `http://localhost:5000/api/timetable/getSuggestions/${messid}/${day}/${slot}`
+          `${API_BASE_URL}/api/timetable/getSuggestions/${messid}/${day}/${slot}`
         );
         
         const data = response.data.suggestions;
@@ -86,7 +86,8 @@ console.log(messid);
         alert("Please add at least one food item.");
         return;
       }
-      await axios.post("http://localhost:5000/api/food/addFood", {
+      
+      await axios.post(`${API_BASE_URL}/api/food/addFood`, {
         messId: messid,
         day,
         slot,

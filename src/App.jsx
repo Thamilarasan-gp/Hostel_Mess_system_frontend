@@ -13,12 +13,13 @@ import AddTimetable from "./MessStaff/AddTimetable";
 import AddFood from "./MessStaff/AddFood";
 import FoodList from "./MessStaff/FoodList";
 import AddReview from "./MessStaff/AddReview";
-import ReviewList from "./MessStaff/ReviewList";
+import ReviewList from "./Students/ReviewList";
 import AddMess from "./warden/AddMess";
 import MessDashboard from "./MessStaff/MessDashboard";
 import LoginMess from "./Auth/LoginMess";
 import GetFoodItems from "./Students/GetFoodItems";
 import ReviewStatus from "./Students/ReviewStatus";
+import Admin from "./warden/Admin";
 
 function App() {
   return (
@@ -29,20 +30,22 @@ function App() {
       <Route path="/issuetoken" element={<IssueToken/>} />
       <Route path="/qr" element={<QRGenerate/>} />
       <Route path="/tokenrecords" element={<TokenRecords/>} />
-      <Route path="/studentdash" element={<StudentDashboard/>} />
       <Route path="/addstudent" element={<AddStudent/>} />
+      <Route path="/addMess" element={<AddMess/>}/>
+
       <Route path="/studentlogin" element={<StudentLogin/>} />
-     
-      <Route path="/footlist" element={<FoodList/>} />
-        <Route path="/add-timetable" element={<AddTimetable />} />
-        <Route path="/add-food" element={<AddFood />} />
-        <Route path="/add-review/:foodItemId" element={<AddReview />} />
-        <Route path="/reviews/:foodItemId" element={<ReviewList />} />
-   <Route path="/addMess" element={<AddMess/>}/>
+      <Route path="/studentdash" element={<StudentDashboard/>} />
+      <Route path="/foodlist" element={<FoodList/>} />
+      <Route path="/add-review/:foodItemId" element={<AddReview />} />
+
+      <Route path="/messLogin" element={<LoginMess/>}/>
    <Route path="/mess-dashboard" element={<MessDashboard/>}/>
-    <Route path="/messLogin" element={<LoginMess/>}/>
+   <Route path="/add-timetable" element={<AddTimetable />} />
+    <Route path="/add-food" element={<AddFood />} />
+   <Route path="/reviews/:foodItemId" element={<ReviewList />} />
      <Route path="/getfooditems" element={<GetFoodItems/>}/>
        <Route path="/reviewsstatus/:foodItemId" element={<ReviewStatus/>} />
+       <Route path="/adminhome" element={<Admin/>}/>
     
       <Route path="*" element={<NotFound/>} />
     </Routes>

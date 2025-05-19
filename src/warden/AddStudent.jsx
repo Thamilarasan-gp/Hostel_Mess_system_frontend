@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
-import "./AddStudent.css";  // Import CSS file
+import styles from './AddStudent.module.css';
+import { API_BASE_URL } from "../apiurl";
 
 const AddStudent = () => {
   const [student, setStudent] = useState({
@@ -12,6 +13,7 @@ const AddStudent = () => {
     year: "",
     block: "",
     room_number: "",
+    password: ""
   });
 
   const handleChange = (e) => {
@@ -21,19 +23,17 @@ const AddStudent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("wardenToken");  // Get stored warden token
+      const token = localStorage.getItem("wardenToken");
 
       if (!token) {
         alert("No token found! Please log in again.");
         return;
       }
-      console.log(localStorage.getItem("wardenToken"));
 
-
-      const response = await axios.post(
-        "http://localhost:5000/api/warden/add-student",
+      await axios.post(
+        `${API_BASE_URL}/api/warden/add-student`,
         { ...student, assigned_token: `MARCH${new Date().getFullYear()}` },
-        { headers: { Authorization: `Bearer ${token}` } } // Pass token
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       alert("Student added successfully!");
@@ -46,6 +46,7 @@ const AddStudent = () => {
         year: "",
         block: "",
         room_number: "",
+        password: ""
       });
     } catch (error) {
       console.error("Error adding student:", error);
@@ -58,19 +59,118 @@ const AddStudent = () => {
   };
 
   return (
-    <div className="add-student-container">
-      <h2 className="add-student-title">Add Student</h2>
-      <form onSubmit={handleSubmit} className="add-student-form">
-        <input type="text" name="name" placeholder="Name" value={student.name} onChange={handleChange} required className="add-student-input" />
-        <input type="text" name="roll_number" placeholder="Roll Number" value={student.roll_number} onChange={handleChange} required className="add-student-input" />
-        <input type="email" name="email" placeholder="Email" value={student.email} onChange={handleChange} required className="add-student-input" />
-        <input type="text" name="phone" placeholder="Phone" value={student.phone} onChange={handleChange} required className="add-student-input" />
-        <input type="text" name="department" placeholder="Department" value={student.department} onChange={handleChange} required className="add-student-input" />
-        <input type="number" name="year" placeholder="Year" value={student.year} onChange={handleChange} required className="add-student-input" />
-        <input type="text" name="block" placeholder="Block" value={student.block} onChange={handleChange} required className="add-student-input" />
-        <input type="text" name="room_number" placeholder="Room Number" value={student.room_number} onChange={handleChange} required className="add-student-input" />
-<input type="text" name="password" placeholder="Password" value={student.password} onChange={handleChange} required className="add-student-input" />
-        <button type="submit" className="add-student-btn">Add Student</button>
+    <div className={styles.container}>
+      <h2 className={styles.title}>Add New Student</h2>
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.inputGroup}>
+          <input 
+            type="text" 
+            name="name" 
+            placeholder="Name" 
+            value={student.name} 
+            onChange={handleChange} 
+            required 
+            className={styles.input}
+          />
+        </div>
+        
+        <div className={styles.inputGroup}>
+          <input 
+            type="text" 
+            name="roll_number" 
+            placeholder="Roll Number" 
+            value={student.roll_number} 
+            onChange={handleChange} 
+            required 
+            className={styles.input}
+          />
+        </div>
+        
+        <div className={styles.inputGroup}>
+          <input 
+            type="email" 
+            name="email" 
+            placeholder="Email" 
+            value={student.email} 
+            onChange={handleChange} 
+            required 
+            className={styles.input}
+          />
+        </div>
+        
+        <div className={styles.inputGroup}>
+          <input 
+            type="text" 
+            name="phone" 
+            placeholder="Phone" 
+            value={student.phone} 
+            onChange={handleChange} 
+            required 
+            className={styles.input}
+          />
+        </div>
+        
+        <div className={styles.inputGroup}>
+          <input 
+            type="text" 
+            name="department" 
+            placeholder="Department" 
+            value={student.department} 
+            onChange={handleChange} 
+            required 
+            className={styles.input}
+          />
+        </div>
+        
+        <div className={styles.inputGroup}>
+          <input 
+            type="number" 
+            name="year" 
+            placeholder="Year" 
+            value={student.year} 
+            onChange={handleChange} 
+            required 
+            className={styles.input}
+          />
+        </div>
+        
+        <div className={styles.inputGroup}>
+          <input 
+            type="text" 
+            name="block" 
+            placeholder="Block" 
+            value={student.block} 
+            onChange={handleChange} 
+            required 
+            className={styles.input}
+          />
+        </div>
+        
+        <div className={styles.inputGroup}>
+          <input 
+            type="text" 
+            name="room_number" 
+            placeholder="Room Number" 
+            value={student.room_number} 
+            onChange={handleChange} 
+            required 
+            className={styles.input}
+          />
+        </div>
+        
+        <div className={styles.inputGroup}>
+          <input 
+            type="password" 
+            name="password" 
+            placeholder="Password" 
+            value={student.password} 
+            onChange={handleChange} 
+            required 
+            className={styles.input}
+          />
+        </div>
+        
+        <button type="submit" className={styles.button}>Add Student</button>
       </form>
     </div>
   );

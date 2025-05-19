@@ -1,0 +1,222 @@
+/* ReviewStatus.css */
+/* Modern, clean design with better visual hierarchy */
+
+.review-widget {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.review-widget.expanded {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.review-widget__header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.2s ease;
+}
+
+.review-widget__header:hover {
+  background-color: #f9f9f9;
+}
+
+.review-widget.expanded .review-widget__header {
+  border-bottom-color: #eaeaea;
+}
+
+.review-widget__title {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.review-widget__title-icon {
+  color: #5e6ad2;
+  margin-right: 0.75rem;
+}
+
+.review-widget__title h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+}
+
+.review-widget__expand-icon {
+  color: #777;
+  transition: transform 0.3s ease;
+}
+
+.review-widget__expand-icon.expanded {
+  transform: rotate(90deg);
+}
+
+.review-widget__summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #fafafa;
+}
+
+.review-widget__metric {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.review-widget__metric-label {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.review-widget__star-display {
+  display: flex;
+  align-items: center;
+}
+
+.review-widget__star {
+  color: #e0e0e0;
+  margin-right: 2px;
+}
+
+.review-widget__star.filled {
+  color: #ffc72c;
+}
+
+.review-widget__star.half-filled {
+  position: relative;
+}
+
+.review-widget__star.half-filled:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background-color: #ffc72c;
+  clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+}
+
+.review-widget__rating-value {
+  margin-left: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.review-widget__metric-value {
+  font-weight: 500;
+  color: #333;
+}
+
+.review-widget__details {
+  padding: 1rem;
+  border-top: 1px solid #eaeaea;
+}
+
+.review-widget__distribution {
+  margin-top: 0.5rem;
+}
+
+.review-widget__distribution h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  color: #444;
+}
+
+.review-widget__bar-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  height: 24px;
+}
+
+.review-widget__bar-label {
+  width: 35px;
+  font-size: 0.75rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+}
+
+.review-widget__bar-bg {
+  flex-grow: 1;
+  height: 8px;
+  background-color: #eaeaea;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0 0.75rem;
+}
+
+.review-widget__bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, #5e6ad2, #8a94e8);
+  border-radius: 4px;
+  min-width: 4px;
+  transition: width 0.5s ease;
+}
+
+.review-widget__bar-count {
+  width: 30px;
+  font-size: 0.75rem;
+  color: #666;
+  text-align: right;
+}
+
+/* Loading State */
+.review-widget__loading {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+.review-widget__spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(94, 106, 210, 0.2);
+  border-radius: 50%;
+  border-top-color: #5e6ad2;
+  animation: spin 1s linear infinite;
+  margin-bottom: 0.75rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.review-widget__error {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e53935;
+  background-color: #ffebee;
+  border-radius: 4px;
+}
+
+/* Empty State */
+.review-widget__empty {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-style: italic;
+  gap: 0.5rem;
+  background-color: #f5f5f5;
+}

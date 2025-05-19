@@ -1,0 +1,344 @@
+/* QR Scanner Component Styles */
+.qr-scanner-section {
+width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  background-color: #ffffff;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  color: #2196f3;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-icon {
+  color: #2196f3;
+}
+
+.scanner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 15px;
+  background-color: #f5fbff;
+}
+
+.token-display {
+  width: 100%;
+  text-align: center;
+}
+
+.token-display h3 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 1.4rem;
+}
+
+.token-text {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2196f3;
+  padding: 10px 15px;
+  background-color: rgba(33, 150, 243, 0.1);
+  border-radius: 8px;
+  display: inline-block;
+  margin: 10px 0;
+}
+
+.token-info {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin: 15px 0;
+  width: 100%;
+  max-width: 400px;
+}
+
+.token-info p {
+  margin: 8px 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.token-info strong {
+  color: #333;
+  font-weight: 600;
+}
+
+#qr-reader {
+  width: 100%;
+  max-width: 400px;
+  margin: 20px auto;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+}
+
+/* Override HTML5 QR Code Scanner library styles */
+#qr-reader__dashboard_section_csr {
+  text-align: center !important;
+}
+
+#qr-reader__dashboard_section_csr span {
+  color: #2196f3 !important;
+}
+
+#qr-reader__dashboard_section_csr button {
+  background-color: #2196f3 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s !important;
+}
+
+#qr-reader__dashboard_section_csr button:hover {
+  background-color: #1976d2 !important;
+}
+
+#qr-reader__dashboard_section_swaplink {
+  color: #2196f3 !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+}
+
+#qr-reader__scan_region {
+  background-color: #2196f3 !important;
+}
+
+#qr-reader__scan_region img {
+  opacity: 0.8 !important;
+}
+
+/* Error message */
+.token-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.token-loading p {
+  color: #2196f3;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.scan-result {
+  width: 100%;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+}
+
+.scan-result.success {
+  background-color: #e8f5e9;
+  border: 1px solid #b9f6ca;
+}
+
+.scan-result.error {
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+}
+
+.result-icon {
+  margin-bottom: 15px;
+}
+
+.scan-result.success .result-icon {
+  color: #4caf50;
+}
+
+.scan-result.error .result-icon {
+  color: #f44336;
+}
+
+.result-title {
+  font-size: 1.4rem;
+  margin: 5px 0 10px;
+  color: #333;
+}
+
+.result-text {
+  background-color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  font-family: monospace;
+  word-break: break-all;
+  margin: 10px 0 15px;
+  font-size: 0.9rem;
+  max-width: 100%;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.result-instruction {
+  font-weight: 600;
+  color: #2196f3;
+  margin: 10px 0;
+}
+
+.debug-info {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #666;
+  width: 100%;
+  margin: 10px 0;
+  text-align: left;
+}
+
+.debug-info p {
+  margin: 5px 0;
+}
+
+.scan-button {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+  transition: background-color 0.3s;
+}
+
+.scan-button:hover {
+  background-color: #1976d2;
+}
+
+.token-used-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  border-radius: 15px;
+  background-color: #fff5f5;
+  border: 1px solid #ffcdd2;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  text-align: center;
+}
+
+.token-used-message .result-icon {
+  color: #f44336;
+  margin-bottom: 15px;
+}
+
+.token-used-message h3 {
+  color: #d32f2f;
+  margin: 0 0 10px;
+  font-size: 1.3rem;
+}
+
+.token-used-message p {
+  color: #757575;
+  margin: 0;
+}
+
+/* Red scanning line animation */
+.scanner-box {
+  position: relative;
+  min-height: 350px;
+  background-color: #f0f8ff;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.scanner-box::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #ff4d4f;
+  z-index: 10;
+  animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-100px);
+  }
+  50% {
+    transform: translateY(100px);
+  }
+  100% {
+    transform: translateY(-100px);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .qr-scanner-section {
+    padding: 15px;
+    border-radius: 15px;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .scanner-container {
+    padding: 15px;
+  }
+  
+  .token-info, #qr-reader {
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.3rem;
+  }
+  
+  .token-text {
+    font-size: 1.1rem;
+  }
+  
+  .result-title {
+    font-size: 1.2rem;
+  }
+  
+  .scan-button {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+}

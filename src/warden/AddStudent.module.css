@@ -1,0 +1,107 @@
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: #ffffff; /* Dark blue background */
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(190, 45, 45, 0.3);
+  color: #e6f1ff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #0e52e6; /* Teal accent color */
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inputGroup {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  background: #ffffff; /* Darker blue input background */
+  border: 1px solid #1e3a8a;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #000000;
+  transition: all 0.3s ease;
+}
+
+.input::placeholder {
+  color: #00030a; /* Lighter blue placeholder */
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4ba4df;
+  box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+  background: #c6d7ee;
+}
+
+.button {
+  padding: 14px;
+  background: #2247ad; /* Medium blue button */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.button:hover {
+  background: #2563eb; /* Lighter blue on hover */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .input {
+    padding: 12px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .title {
+    font-size: 1.3rem;
+  }
+  
+  .button {
+    padding: 12px;
+  }
+}

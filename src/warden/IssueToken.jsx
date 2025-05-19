@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './IssueToken.css';
+import styles from './IssueToken.module.css';
+import { API_BASE_URL } from "../apiurl";
 
 const IssueToken = () => {
   const navigate = useNavigate();
@@ -38,23 +39,19 @@ const IssueToken = () => {
           throw new Error("Authentication token not found");
         }
   
-        const response = await fetch(`http://localhost:5000/api/student/under-warden?wardenId=${wardenInfo.id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/student/under-warden?wardenId=${wardenInfo.id}`, {
           headers: {
              "Authorization": `Bearer ${token}`,
              "Content-Type": "application/json",
           },
-       });
+        });
        
         const data = await response.json();
-        console.log("API Response:", data);
-       
-        // ✅ Extract students correctly
-        const students = data.students || [];  // Extract the students array
-       
-        console.log("Fetched Student List:", students);
-       
+        
+        // Extract students correctly
+        const students = data.students || [];
+        
         if (students.length > 0) {
-          console.log("Students available:", students);
           // Save the fetched students to state
           setSupervisedStudents(students);
         } else {
@@ -106,22 +103,6 @@ const IssueToken = () => {
     setTokenPreview(null);
   };
   
-  const handleStudentSearch = (query) => {
-    if (query.length > 0) {
-      // Filter students based on query - matching roll number or name
-      const filtered = supervisedStudents.filter(student => 
-        (student?.roll || '').toLowerCase().includes(query.toLowerCase()) || 
-        (student?.name || '').toLowerCase().includes(query.toLowerCase())
-      );
-      
-      setSuggestedStudents(filtered);
-      setShowSuggestions(true);
-    } else {
-      setSuggestedStudents([]);
-      setShowSuggestions(false);
-    }
-  };
-
   const selectStudent = (student) => {
     if (isBulkMode) {
       // In bulk mode, we add to the selectedStudents array
@@ -142,9 +123,9 @@ const IssueToken = () => {
       // Show a quick preview of the student info
       const studentElement = document.getElementById('student_roll_number');
       if (studentElement) {
-        studentElement.classList.add('issuetoken-field--success');
+        studentElement.classList.add(styles.fieldSuccess);
         setTimeout(() => {
-          studentElement.classList.remove('issuetoken-field--success');
+          studentElement.classList.remove(styles.fieldSuccess);
         }, 1000);
       }
     }
@@ -161,7 +142,7 @@ const IssueToken = () => {
     const value = e.target.value;
     setSearchTerm(value);
     
-    // Filter students for suggestions in bulk mode
+    // Filter students for suggestions
     if (value.length > 0) {
       const filtered = supervisedStudents.filter(student => 
         (student?.roll || '').toLowerCase().includes(value.toLowerCase()) || 
@@ -204,190 +185,179 @@ const IssueToken = () => {
     }
   };
 
-  const selectAllStudents = () => {
-    // Make sure we're selecting from the filtered list if there's a search term
-    const studentsToSelect = searchTerm ? filteredSupervisedStudents : supervisedStudents;
-    setTokenData({
-      ...tokenData,
-      selectedStudents: [...studentsToSelect]
-    });
-  };
-
-  const clearAllStudents = () => {
-    setTokenData({
-      ...tokenData,
-      selectedStudents: []
-    });
-  };
-
   const validateForm = () => {
     const newErrors = {};
-    
+  
     if (!isBulkMode && !tokenData.student_roll_number.trim()) {
       newErrors.student_roll_number = 'Student roll number is required';
     }
-    
+  
     if (isBulkMode && tokenData.selectedStudents.length === 0) {
       newErrors.selectedStudents = 'Please select at least one student';
     }
-    
+  
     const startDate = new Date(tokenData.validity_start);
     const endDate = new Date(tokenData.validity_end);
-    
-    if (endDate <= startDate) {
-      newErrors.validity_end = 'End date must be after start date';
+  
+    if (isNaN(startDate.getTime())) {
+      newErrors.validity_start = 'Valid From date is invalid';
     }
-    
+  
+    if (isNaN(endDate.getTime())) {
+      newErrors.validity_end = 'Valid Until date is invalid';
+    }
+  
+    if (startDate >= endDate) {
+      newErrors.validity_end = 'Valid Until date must be after Valid From date';
+    }
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Fixed generateToken function to properly handle QR code display
   const generateToken = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
       return;
     }
-    
+  
     setIsGenerating(true);
-    
+  
     try {
-      // Get warden information from localStorage
       const wardenInfo = JSON.parse(localStorage.getItem("wardenInfo"));
       const token = localStorage.getItem("wardenToken");
-      
+  
       if (!wardenInfo || !wardenInfo.id) {
         throw new Error("Warden information not found");
       }
-      
+  
       if (!token) {
         throw new Error("Authentication token not found");
       }
-      
+  
       // Prepare data for API call
       let requestBody = {
         warden_id: wardenInfo.id,
-        secret_text: `WARDEN-CUSTOM-QR-CODE-${Date.now().toString().slice(-5)}`, // Generating a unique code
+        secret_text: `WARDEN-CUSTOM-QR-CODE-${Date.now().toString().slice(-5)}`,
       };
-      
+  
       // Handle both single and bulk mode
       if (isBulkMode) {
-        // For bulk mode, collect student IDs from selectedStudents
         requestBody.student_ids = tokenData.selectedStudents.map(student => student._id);
       } else {
-        // For single mode, get the selected student's ID
         const selectedStudent = supervisedStudents.find(s => s.roll === tokenData.student_roll_number);
         if (!selectedStudent) {
           throw new Error("Selected student not found");
         }
         requestBody.student_ids = [selectedStudent._id];
       }
-      
-      // Add validity dates to the request
-      requestBody.validity_start = tokenData.validity_start;
-      requestBody.validity_end = tokenData.validity_end;
-      
+  
+      // Convert dates to full ISO 8601 format
+      const startDate = new Date(tokenData.validity_start);
+      const endDate = new Date(tokenData.validity_end);
+  
+      // Ensure dates are valid
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        throw new Error("Invalid date format");
+      }
+  
+      // Set dates to start and end of day in UTC
+      requestBody.validity_start = new Date(
+        Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate())
+      ).toISOString();
+      requestBody.validity_end = new Date(
+        Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999)
+      ).toISOString();
+  
       // Make the API call
-      const response = await fetch('http://localhost:5000/api/token/generatetoken', {
+      const response = await fetch(`${API_BASE_URL}/api/token/generatetoken`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
       });
-      
+  
       if (!response.ok) {
-        throw new Error(`Error: ${response.status} - ${await response.text()}`);
+        const errorText = await response.text();
+        throw new Error(`Error: ${response.status} - ${errorText}`);
       }
-      
+  
       const data = await response.json();
-      console.log('Token generation response:', data);
-      
+  
       // Handle successful token generation
       if (data.success || data.message === "Token created successfully!") {
-        
-        // For bulk mode
         if (isBulkMode) {
           const bulkTokens = data.tokens || [];
-          console.log('Bulk tokens:', bulkTokens);
-          
+  
           if (bulkTokens.length > 0) {
-            // Extract QR code data from the response
             const firstToken = bulkTokens[0];
             const qrCodeData = firstToken.qrCode || data.qrCode;
-            
-            // Update token preview with QR code
+  
             setTokenPreview({
               token: firstToken.token_code || "Generated Token",
               student: tokenData.selectedStudents.find(s => s._id === firstToken.student_id) || 
                       { name: firstToken.student_name, roll: firstToken.student_roll },
-              validFrom: new Date(tokenData.validity_start).toLocaleDateString(),
-              validTo: new Date(tokenData.validity_end).toLocaleDateString(),
+              validFrom: new Date(firstToken.validity_start || tokenData.validity_start).toLocaleDateString(),
+              validTo: new Date(firstToken.validity_end || tokenData.validity_end).toLocaleDateString(),
               issueDate: new Date().toLocaleDateString(),
               issuedBy: wardenInfo.name || "Current Warden",
               bulkCount: bulkTokens.length,
-              qrCode: qrCodeData 
+              qrCode: qrCodeData,
             });
-            
-            // Update recent issues
+  
             const newRecentIssues = bulkTokens.map(tokenInfo => ({
               roll: tokenInfo.student_roll || '',
               name: tokenInfo.student_name || '',
-              validity: `${new Date(tokenData.validity_start).toLocaleDateString()} - ${new Date(tokenData.validity_end).toLocaleDateString()}`,
+              validity: `${new Date(tokenInfo.validity_start || tokenData.validity_start).toLocaleDateString()} - ${new Date(tokenInfo.validity_end || tokenData.validity_end).toLocaleDateString()}`,
               token: tokenInfo.token_code || '',
               status: 'active',
-              qrCode: tokenInfo.qrCode || qrCodeData
+              qrCode: tokenInfo.qrCode || qrCodeData,
             }));
-            
+  
             setRecentIssues([...newRecentIssues, ...recentIssues].slice(0, 10));
           }
         } else {
-          // For single mode
           const tokenInfo = data.token || (data.tokens && data.tokens[0]) || {};
           const qrCodeData = tokenInfo.qrCode || data.qrCode;
-          
+  
           if (!qrCodeData) {
             console.error("QR code data not found in response");
             throw new Error("QR code not found in server response");
           }
-          
+  
           const student = supervisedStudents.find(s => s.roll === tokenData.student_roll_number);
-          
-          // Update token preview with QR code
+  
           setTokenPreview({
             token: tokenInfo.token_code || data.token || "Generated Token",
             student: student || { 
               roll: tokenInfo.student_roll || tokenData.student_roll_number, 
               name: tokenInfo.student_name || "Unknown Student" 
             },
-            validFrom: new Date(tokenData.validity_start).toLocaleDateString(),
-            validTo: new Date(tokenData.validity_end).toLocaleDateString(),
+            validFrom: new Date(tokenInfo.validity_start || tokenData.validity_start).toLocaleDateString(),
+            validTo: new Date(tokenInfo.validity_end || tokenData.validity_end).toLocaleDateString(),
             issueDate: new Date().toLocaleDateString(),
             issuedBy: wardenInfo.name || "Current Warden",
-            qrCode: qrCodeData
+            qrCode: qrCodeData,
           });
-          
-          // Add to recent issues
+  
           const newIssue = {
             roll: tokenInfo.student_roll || student?.roll || tokenData.student_roll_number,
             name: tokenInfo.student_name || student?.name || "Unknown",
-            validity: `${new Date(tokenData.validity_start).toLocaleDateString()} - ${new Date(tokenData.validity_end).toLocaleDateString()}`,
+            validity: `${new Date(tokenInfo.validity_start || tokenData.validity_start).toLocaleDateString()} - ${new Date(tokenInfo.validity_end || tokenData.validity_end).toLocaleDateString()}`,
             token: tokenInfo.token_code || data.token || "Generated Token",
             status: 'active',
-            qrCode: qrCodeData
+            qrCode: qrCodeData,
           };
-          
+  
           setRecentIssues([newIssue, ...recentIssues.slice(0, 9)]);
         }
-        
-        // Show success message
+  
         alert("Token generated successfully!");
-        
       } else {
         throw new Error(data.message || 'Failed to generate token');
       }
-      
     } catch (error) {
       console.error('Error generating token:', error);
       alert(`Error: ${error.message}`);
@@ -396,7 +366,7 @@ const IssueToken = () => {
     }
   };
   
-  // Add a function to download QR code
+  // Function to download QR code
   const downloadQRCode = (qrCode, tokenCode) => {
     if (!qrCode) {
       alert("QR code not available for download");
@@ -434,9 +404,10 @@ const IssueToken = () => {
 
   if (isLoading) {
     return (
-      <div className="issuetoken-container">
-        <div className="issuetoken-loading">
-          Loading student data...
+      <div className={styles.container}>
+        <div className={styles.loading}>
+          <div className={styles.spinner}></div>
+          <p>Loading student data...</p>
         </div>
       </div>
     );
@@ -444,8 +415,9 @@ const IssueToken = () => {
 
   if (error) {
     return (
-      <div className="issuetoken-container">
-        <div className="issuetoken-error">
+      <div className={styles.container}>
+        <div className={styles.errorContainer}>
+          <div className={styles.errorIcon}>⚠️</div>
           <h2>Authentication Error</h2>
           <p>{error}</p>
           {error.includes("login") ? (
@@ -457,7 +429,7 @@ const IssueToken = () => {
                 setIsLoading(true);
                 window.location.reload();
               }}
-              className="issuetoken-retry-btn"
+              className={styles.retryBtn}
             >
               Retry
             </button>
@@ -468,40 +440,40 @@ const IssueToken = () => {
   }
 
   return (
-    <div className="issuetoken-container">
-      <div className="issuetoken-header">
+    <div className={styles.container}>
+      <div className={styles.header}>
         <h1>Issue Access Token</h1>
-        <p className="issuetoken-subtitle">Generate time-limited access tokens for student entry/exit</p>
+        <p className={styles.subtitle}>Generate time-limited access tokens for student entry/exit</p>
       </div>
 
-      <div className="issuetoken-mode-switcher">
+      <div className={styles.modeSwitcher}>
         <button 
-          className={`issuetoken-mode-btn ${!isBulkMode ? 'active' : ''}`}
+          className={`${styles.modeBtn} ${!isBulkMode ? styles.active : ''}`}
           onClick={() => setIsBulkMode(false)}
         >
           Single Student
         </button>
         <button 
-          className={`issuetoken-mode-btn ${isBulkMode ? 'active' : ''}`}
+          className={`${styles.modeBtn} ${isBulkMode ? styles.active : ''}`}
           onClick={() => setIsBulkMode(true)}
         >
           Multiple Students
         </button>
       </div>
 
-      <div className="issuetoken-content">
-        <div className="issuetoken-form-section">
-          <form onSubmit={generateToken} className="issuetoken-form">
+      <div className={styles.content}>
+        <div className={styles.formSection}>
+          <form onSubmit={generateToken} className={styles.form}>
             {!isBulkMode ? (
               // Single student mode
-              <div className="issuetoken-form-group">
+              <div className={styles.formGroup}>
                 <label htmlFor="student_roll_number">Student Roll Number</label>
-                <div className="issuetoken-input-wrapper">
+                <div className={styles.inputWrapper}>
                   <input
                     id="student_roll_number"
                     type="text"
                     name="student_roll_number"
-                    className={`issuetoken-field ${errors.student_roll_number ? 'issuetoken-field--error' : ''}`}
+                    className={`${styles.field} ${errors.student_roll_number ? styles.fieldError : ''}`}
                     placeholder="Enter student roll number"
                     value={tokenData.student_roll_number}
                     onChange={handleChange}
@@ -510,7 +482,7 @@ const IssueToken = () => {
                   {tokenData.student_roll_number && (
                     <button 
                       type="button" 
-                      className="issuetoken-clear-btn"
+                      className={styles.clearBtn}
                       onClick={() => setTokenData({...tokenData, student_roll_number: ''})}
                     >
                       ×
@@ -518,26 +490,26 @@ const IssueToken = () => {
                   )}
                   <button 
                     type="button"
-                    className="issuetoken-browse-btn"
+                    className={styles.browseBtn}
                     onClick={toggleStudentSelector}
                   >
                     Browse
                   </button>
                 </div>
                 {errors.student_roll_number && (
-                  <p className="issuetoken-error">{errors.student_roll_number}</p>
+                  <p className={styles.errorText}>{errors.student_roll_number}</p>
                 )}
                 
                 {showSuggestions && suggestedStudents.length > 0 && (
-                  <div className="issuetoken-suggestions">
+                  <div className={styles.suggestions}>
                     {suggestedStudents.map(student => (
                       <div 
                         key={student.roll} 
-                        className="issuetoken-suggestion-item"
+                        className={styles.suggestionItem}
                         onClick={() => selectStudent(student)}
                       >
-                        <span className="issuetoken-suggestion-roll">{student.roll}</span>
-                        <span className="issuetoken-suggestion-name">{student.name}</span>
+                        <span className={styles.suggestionRoll}>{student.roll}</span>
+                        <span className={styles.suggestionName}>{student.name}</span>
                       </div>
                     ))}
                   </div>
@@ -545,31 +517,44 @@ const IssueToken = () => {
               </div>
             ) : (
               // Bulk mode
-              <div className="issuetoken-bulk-section">
-                <div className="issuetoken-bulk-header">
+              <div className={styles.bulkSection}>
+                <div className={styles.bulkHeader}>
                   <h3>Selected Students ({tokenData.selectedStudents.length})</h3>
-                  <div className="issuetoken-bulk-actions">
-                    <button type="button" onClick={selectAllStudents}>Select All</button>
-                    <button type="button" onClick={clearAllStudents}>Clear All</button>
+                  <div className={styles.bulkActions}>
+                    <button type="button" onClick={() => {
+                      const studentsToSelect = searchTerm 
+                        ? filteredSupervisedStudents 
+                        : supervisedStudents;
+                      setTokenData({
+                        ...tokenData,
+                        selectedStudents: [...studentsToSelect]
+                      });
+                    }}>Select All</button>
+                    <button type="button" onClick={() => {
+                      setTokenData({
+                        ...tokenData,
+                        selectedStudents: []
+                      });
+                    }}>Clear All</button>
                   </div>
                 </div>
                 
                 {/* Search field for bulk mode */}
-                <div className="issuetoken-form-group">
+                <div className={styles.formGroup}>
                   <label htmlFor="search_students">Search Students</label>
-                  <div className="issuetoken-input-wrapper">
+                  <div className={styles.inputWrapper}>
                     <input
                       id="search_students"
                       type="text"
                       value={searchTerm}
                       onChange={handleSearchChange}
                       placeholder="Search by name, roll number, or department"
-                      className="issuetoken-field"
+                      className={styles.field}
                     />
                     {searchTerm && (
                       <button 
                         type="button" 
-                        className="issuetoken-clear-btn"
+                        className={styles.clearBtn}
                         onClick={() => {
                           setSearchTerm('');
                           setSuggestedStudents([]);
@@ -584,86 +569,106 @@ const IssueToken = () => {
                 
                 {/* Student suggestions list in bulk mode */}
                 {isBulkMode && searchTerm && (
-                  <div className="issuetoken-student-list">
+                  <div className={styles.studentList}>
                     {filteredSupervisedStudents.length > 0 ? (
                       filteredSupervisedStudents.map(student => (
                         <div 
                           key={student.roll} 
-                          className={`issuetoken-student-item ${
-                            tokenData.selectedStudents.some(s => s.roll === student.roll) ? 'selected' : ''
+                          className={`${styles.studentItem} ${
+                            tokenData.selectedStudents.some(s => s.roll === student.roll) ? styles.selected : ''
                           }`}
                           onClick={() => selectStudent(student)}
                         >
-                          <span className="issuetoken-student-name">{student.name}</span>
-                          <span className="issuetoken-student-roll">{student.roll}</span>
+                          <span className={styles.studentName}>{student.name}</span>
+                          <span className={styles.studentRoll}>{student.roll}</span>
                           {student.department && (
-                            <span className="issuetoken-student-dept">{student.department}</span>
+                            <span className={styles.studentDept}>{student.department}</span>
                           )}
                         </div>
                       ))
                     ) : (
-                      <div className="issuetoken-no-results">No students found matching "{searchTerm}"</div>
+                      <div className={styles.noResults}>No students found matching "{searchTerm}"</div>
                     )}
                   </div>
                 )}
                 
-                <div className="issuetoken-selected-students">
+                <div className={styles.selectedStudents}>
                   {tokenData.selectedStudents.map(student => (
-                    <div key={student.roll} className="issuetoken-selected-student">
+                    <div key={student.roll} className={styles.selectedStudent}>
                       <span>{student.name} ({student.roll})</span>
-                      <button type="button" onClick={() => removeSelectedStudent(student.roll)}>×</button>
+                      <button 
+                        type="button" 
+                        className={styles.removeBtn}
+                        onClick={() => removeSelectedStudent(student.roll)}
+                      >
+                        ×
+                      </button>
                     </div>
                   ))}
                 </div>
                 {errors.selectedStudents && (
-                  <p className="issuetoken-error">{errors.selectedStudents}</p>
+                  <p className={styles.errorText}>{errors.selectedStudents}</p>
                 )}
               </div>
             )}
 
-            <div className="issuetoken-date-group">
-              <div className="issuetoken-form-group">
+            <div className={styles.dateGroup}>
+              <div className={styles.formGroup}>
                 <label htmlFor="validity_start">Valid From</label>
                 <input
                   type="date"
                   id="validity_start"
                   name="validity_start"
+                  className={styles.dateField}
                   value={tokenData.validity_start}
                   onChange={handleChange}
                   min={new Date().toISOString().split('T')[0]}
+                  required
                 />
+                {errors.validity_start && (
+                  <p className={styles.errorText}>{errors.validity_start}</p>
+                )}
               </div>
 
-              <div className="issuetoken-form-group">
+              <div className={styles.formGroup}>
                 <label htmlFor="validity_end">Valid Until</label>
                 <input
                   type="date"
                   id="validity_end"
                   name="validity_end"
+                  className={styles.dateField}
                   value={tokenData.validity_end}
                   onChange={handleChange}
                   min={tokenData.validity_start}
+                  required
                 />
                 {errors.validity_end && (
-                  <p className="issuetoken-error">{errors.validity_end}</p>
+                  <p className={styles.errorText}>{errors.validity_end}</p>
                 )}
               </div>
             </div>
-
-            <div className="issuetoken-actions">
+            
+            <div className={styles.actions}>
               <button 
                 type="submit" 
-                className="issuetoken-generate-btn"
+                className={styles.generateBtn}
                 disabled={isGenerating}
               >
                 {isGenerating ? 'Generating...' : 'Generate Token'}
               </button>
               <button 
                 type="button" 
-                className="issuetoken-reset-btn"
+                className={styles.resetBtn}
                 onClick={resetForm}
               >
                 Reset
+              </button>
+              <button 
+                type="button" 
+                className={styles.viewBtn}
+                onClick={viewIssuedTokens}
+              >
+                View Issued Tokens
               </button>
             </div>
           </form>
@@ -671,28 +676,52 @@ const IssueToken = () => {
 
         {/* Token Preview Section */}
         {tokenPreview && (
-          <div className="issuetoken-preview">
-            <h3>Token Preview</h3>
-            <div className="issuetoken-preview-content">
-              <p><strong>Token:</strong> {tokenPreview.token}</p>
-              <p><strong>Student:</strong> {tokenPreview.student.name} ({tokenPreview.student.roll})</p>
-              <p><strong>Valid From:</strong> {tokenPreview.validFrom}</p>
-              <p><strong>Valid Until:</strong> {tokenPreview.validTo}</p>
-              <p><strong>Issue Date:</strong> {tokenPreview.issueDate}</p>
-              <p><strong>Issued By:</strong> {tokenPreview.issuedBy}</p>
-              {tokenPreview.bulkCount && (
-                <p><strong>Total Tokens Generated:</strong> {tokenPreview.bulkCount}</p>
-              )}
+          <div className={styles.preview}>
+            <h3>Generated Token</h3>
+            <div className={styles.previewContent}>
+              <div className={styles.previewInfo}>
+                <div className={styles.previewRow}>
+                  <span className={styles.previewLabel}>Token:</span>
+                  <span className={styles.previewValue}>{tokenPreview.token}</span>
+                </div>
+                <div className={styles.previewRow}>
+                  <span className={styles.previewLabel}>Student:</span>
+                  <span className={styles.previewValue}>
+                    {tokenPreview.student.name} ({tokenPreview.student.roll})
+                  </span>
+                </div>
+                <div className={styles.previewRow}>
+                  <span className={styles.previewLabel}>Valid From:</span>
+                  <span className={styles.previewValue}>{tokenPreview.validFrom}</span>
+                </div>
+                <div className={styles.previewRow}>
+                  <span className={styles.previewLabel}>Valid Until:</span>
+                  <span className={styles.previewValue}>{tokenPreview.validTo}</span>
+                </div>
+                <div className={styles.previewRow}>
+                  <span className={styles.previewLabel}>Issue Date:</span>
+                  <span className={styles.previewValue}>{tokenPreview.issueDate}</span>
+                </div>
+                <div className={styles.previewRow}>
+                  <span className={styles.previewLabel}>Issued By:</span>
+                  <span className={styles.previewValue}>{tokenPreview.issuedBy}</span>
+                </div>
+                {tokenPreview.bulkCount && (
+                  <div className={styles.previewRow}>
+                    <span className={styles.previewLabel}>Total Tokens:</span>
+                    <span className={styles.previewValue}>{tokenPreview.bulkCount}</span>
+                  </div>
+                )}
+              </div>
               
               {/* QR Code Display */}
               {tokenPreview.qrCode && (
-                <div className="issuetoken-qr-container">
-                  <h4>Access Token QR Code</h4>
-                  <div className="issuetoken-qr-image">
+                <div className={styles.qrContainer}>
+                  <div className={styles.qrImage}>
                     <img src={tokenPreview.qrCode} alt="Token QR Code" />
                   </div>
                   <button 
-                    className="issuetoken-qr-download"
+                    className={styles.qrDownload}
                     onClick={() => downloadQRCode(tokenPreview.qrCode, tokenPreview.token)}
                   >
                     Download QR Code
@@ -702,77 +731,45 @@ const IssueToken = () => {
             </div>
           </div>
         )}
-
-        {/* Recent Issues Section */}
-        <div className="issuetoken-recent">
-          <div className="issuetoken-recent-header">
-            <h3>Recently Issued Tokens</h3>
-            <button onClick={viewIssuedTokens}>View All</button>
-          </div>
-          <div className="issuetoken-recent-list">
-            {recentIssues.length > 0 ? (
-              recentIssues.map((issue, index) => (
-                <div key={index} className="issuetoken-recent-item">
-                  <span className="issuetoken-recent-token">{issue.token}</span>
-                  <span className="issuetoken-recent-name">{issue.name}</span>
-                  <span className="issuetoken-recent-roll">{issue.roll}</span>
-                  <span className="issuetoken-recent-validity">{issue.validity}</span>
-                  <span className={`issuetoken-recent-status ${issue.status}`}>
-                    {issue.status}
-                  </span>
-                  {issue.qrCode && (
-                    <button 
-                      className="issuetoken-recent-qr-btn"
-                      onClick={() => downloadQRCode(issue.qrCode, issue.token)}
-                    >
-                      QR
-                    </button>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div className="issuetoken-no-recent">No tokens issued yet</div>
-            )}
-          </div>
-        </div>
       </div>
       
       {/* Student Selector Modal for Browse button */}
       {showStudentSelector && (
-        <div className="issuetoken-modal-backdrop">
-          <div className="issuetoken-modal">
-            <div className="issuetoken-modal-header">
+        <div className={styles.modalBackdrop} onClick={toggleStudentSelector}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
               <h3>Select Student</h3>
-              <button onClick={toggleStudentSelector}>×</button>
+              <button className={styles.modalClose} onClick={toggleStudentSelector}>×</button>
             </div>
-            <div className="issuetoken-modal-search">
+            <div className={styles.modalSearch}>
               <input
                 type="text"
-                placeholder="Search students"
+                placeholder="Search students by name, roll number, or department"
                 value={searchTerm}
                 onChange={handleSearchChange}
+                className={styles.modalSearchInput}
               />
             </div>
-            <div className="issuetoken-modal-content">
+            <div className={styles.modalContent}>
               {filteredSupervisedStudents.length > 0 ? (
                 filteredSupervisedStudents.map(student => (
                   <div 
                     key={student.roll} 
-                    className="issuetoken-modal-item"
+                    className={styles.modalItem}
                     onClick={() => {
                       selectStudent(student);
                       toggleStudentSelector();
                     }}
                   >
-                    <span className="issuetoken-modal-name">{student.name}</span>
-                    <span className="issuetoken-modal-roll">{student.roll}</span>
+                    <span className={styles.modalName}>{student.name}</span>
+                    <span className={styles.modalRoll}>{student.roll}</span>
                     {student.department && (
-                      <span className="issuetoken-modal-dept">{student.department}</span>
+                      <span className={styles.modalDept}>{student.department}</span>
                     )}
                   </div>
                 ))
               ) : (
-                <div className="issuetoken-modal-empty">
+                <div className={styles.modalEmpty}>
                   {searchTerm ? `No students found matching "${searchTerm}"` : 'No students available'}
                 </div>
               )}

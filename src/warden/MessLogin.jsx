@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-
+import { API_BASE_URL } from "../apiurl";
 const MessLogin = () => {
   const [formData, setFormData] = useState({
     admin_id: "",
@@ -20,12 +20,14 @@ const MessLogin = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/mess/login",
+        `${API_BASE_URL}/api/mess/login`,
         formData
       );
 
       // Store token in localStorage
       localStorage.setItem("messToken", response.data.token);
+      localStorage.setItem("messId", response.data.mess.id); // 💥 Save mess id also
+      
       alert("Login Successful!");
       console.log("Token:", response.data.token);
 

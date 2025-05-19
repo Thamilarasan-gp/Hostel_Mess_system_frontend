@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Signup.css';
-
+import { API_BASE_URL } from "../apiurl";
 const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -57,7 +57,7 @@ const Signup = () => {
       setIsSubmitting(true);
       setMessage('');
       try {
-        const response = await fetch('http://localhost:5000/api/auth/warden/signup', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/warden/signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

@@ -3,6 +3,8 @@ import QRScanner from "./QRScanner";
 import TokenHistory from "./TokenHistory";
 import { LogOut } from "lucide-react";
 import "./StudentDashboard.css";
+import GetFoodItems from "./GetFoodItems";
+import ReviewStatus from "./ReviewStatus";
 
 const StudentDashboard = ({ studentName = "John Doe", onLogout }) => {
   const [token, setToken] = useState("");
@@ -20,6 +22,8 @@ const StudentDashboard = ({ studentName = "John Doe", onLogout }) => {
       </button>
       <QRScanner token={token} setTokenHistory={setTokenHistory} />
       <TokenHistory tokenHistory={tokenHistory} />
+      <GetFoodItems/>
+   
     </div>
   );
 };

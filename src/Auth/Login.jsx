@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
-
+import { API_BASE_URL } from "../apiurl";
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -42,7 +42,7 @@ const Login = () => {
     if (Object.keys(newErrors).length === 0) {
       setIsSubmitting(true);
       try {
-        const response = await fetch("http://localhost:5000/api/auth/warden/login", {
+        const response = await fetch(`${API_BASE_URL}/api/auth/warden/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
@@ -83,7 +83,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-form-wrapper">
-        <h2 className="login-title">Warden Login</h2>
+        <h2 className="login-title">Warden  Login</h2>
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">

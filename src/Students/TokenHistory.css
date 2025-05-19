@@ -1,0 +1,322 @@
+/* TokenHistory.css */
+
+.history-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-sizing: border-box;
+  }
+  
+  .history-section {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 100%;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: white;
+  }
+  
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .section-icon {
+    color: white;
+  }
+  
+  .calendar-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 4px;
+    padding: 6px 10px;
+    color: white;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+  }
+  
+  .calendar-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .history-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 16px;
+  }
+  
+  .history-list-container {
+    width: 100%;
+  }
+  
+  .history-subtitle {
+    color: #666;
+    font-size: 0.9rem; /* Reduced from previous size */
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    font-weight: 500;
+  }
+  
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .history-item {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+  
+  .history-item:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .history-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .history-date-token {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .history-date {
+    color: #666;
+    font-size: 0.85rem;
+  }
+  
+  .history-token {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+  }
+  
+  .history-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #888;
+  }
+
+  
+  .status-indicator.used {
+    background: #ff5010;
+    
+  }
+  
+  .loading-message,
+  .no-history,
+  .error-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px;
+    text-align: center;
+    color: #666;
+  }
+  
+  .error-message {
+    color: #e74c3c;
+  }
+  
+  .spinner {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 2px solid #6e8efb;
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Calendar styles - Made larger */
+  .calendar-container {
+    width: 100%;
+  }
+  
+  .calendar-view {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .calendar-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 6px 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .calendar-header button:hover {
+    background: #f0f0f0;
+  }
+  
+  .calendar-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 12px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #888;
+  }
+  
+  .weekday {
+    padding: 6px;
+  }
+  
+  .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  
+  .calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    position: relative;
+    cursor: default;
+    min-height: 36px; /* Increased size */
+  }
+  
+  .calendar-day.empty {
+    visibility: hidden;
+  }
+  
+  .calendar-day.used {
+    background: rgba(76, 175, 80, 0.1);
+    font-weight: 500;
+  }
+  
+  .used-marker {
+    position: absolute;
+    bottom: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4caf50;
+  }
+  
+  .calendar-day:hover:not(.empty) {
+    background: #f0f0f0;
+  }
+  
+  /* Responsive styles */
+  @media (min-width: 768px) {
+    .history-content {
+      flex-direction: row;
+    }
+    
+    .history-list-container {
+      flex: 1;
+      padding-right: 20px;
+      min-width: 200px;
+    }
+    
+    .calendar-container {
+      flex: 1.5; /* Increased calendar space ratio */
+      min-width: 320px; /* Larger minimum width */
+    }
+  
+    .section-title {
+      font-size: 1.5rem;
+    }
+  
+    .history-subtitle {
+      font-size: 0.9rem; /* Kept small */
+    }
+  
+    .calendar-day {
+      min-height: 40px; /* Even larger on desktop */
+      font-size: 1rem;
+    }
+  
+    .calendar-header h3 {
+      font-size: 1.2rem;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    .calendar-container {
+      display: none;
+    }
+    
+    .calendar-container.visible {
+      display: block;
+      margin-top: 20px;
+    }
+  
+    .history-item {
+      padding: 10px;
+    }
+  }
+  
+  @keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  .calendar-container.visible {
+    animation: slideIn 0.3s ease-out;
+  }

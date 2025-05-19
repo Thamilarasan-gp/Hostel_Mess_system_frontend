@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, Typography, Button, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
+import img from './assets/icon-404.png';
 const NotFound = () => {
   const navigate = useNavigate();
 
@@ -17,15 +17,13 @@ const NotFound = () => {
         height: "100vh",
       }}
     >
-      <Typography variant="h1" color="primary" fontWeight="bold">
-        404
-      </Typography>
+   
       <Typography variant="h5" color="textSecondary" sx={{ mt: 2 }}>
         Oops! The page you are looking for does not exist.
       </Typography>
       <Box
         component="img"
-        src="https://cdn.dribbble.com/users/285475/screenshots/2083086/media/509d62e7b346f72a0e52c59d5787f14b.gif"
+    src={img}
         alt="404 Not Found"
         sx={{ width: "80%", maxWidth: 400, mt: 3 }}
       />

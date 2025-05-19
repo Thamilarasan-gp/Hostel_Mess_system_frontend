@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./AddTimetable.css";
-
+import { API_BASE_URL } from "../apiurl";
 function AddTimetable() {
   const [day, setDay] = useState("");
   const [activeSlots, setActiveSlots] = useState({
@@ -92,7 +92,7 @@ function AddTimetable() {
   
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/timetable/createTimetable",
+      `${API_BASE_URL}/api/timetable/createTimetable`,
         { messid, day, slots: formattedSlots }
       );
       alert(response.data.message);

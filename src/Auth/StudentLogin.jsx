@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './StudentLogin.css';
-
+import { API_BASE_URL } from "../apiurl";
 const StudentLogin = () => {
   const [formData, setFormData] = useState({
     roll_number: '',
@@ -25,7 +25,7 @@ const StudentLogin = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/student/login', formData);
+      const response = await axios.post(`${ API_BASE_URL}/api/auth/student/login`, formData);
       
       if (response.data.success) {
         const { token, studentId, name, roll_number, block, room_number } = response.data;
