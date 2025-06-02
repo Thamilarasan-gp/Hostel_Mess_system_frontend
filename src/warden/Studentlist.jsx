@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./studentlist.css";
+// import "./studentlist.css";
 import { API_BASE_URL } from "../apiurl";
 const StudentList = () => {
   const [students, setStudents] = useState([]);
