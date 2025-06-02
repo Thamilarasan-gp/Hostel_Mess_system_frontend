@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-// import "./studentlist.css";
+import styles from "./StudentList.module.css";
 import { API_BASE_URL } from "../apiurl";
+
 const StudentList = () => {
   const [students, setStudents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
   useEffect(() => {
     const fetchStudents = async () => {
       setIsLoading(true);
@@ -16,13 +18,16 @@ const StudentList = () => {
   
         const token = localStorage.getItem("wardenToken");
   
-        const response = await fetch(`${API_BASE_URL}/api/student/under-warden?wardenId=${wardenInfo.id}`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/student/under-warden?wardenId=${wardenInfo.id}`, 
+          {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
   
         if (!response.ok) {
           throw new Error("Failed to fetch students");
@@ -38,21 +43,20 @@ const StudentList = () => {
       }
     };
   
-    fetchStudents(); // ✅ Call the function here
+    fetchStudents();
   }, []);
   
-  console.log(localStorage.getItem("wardenInfo"))
-  if (isLoading) return <div className="loading">Loading students...</div>;
-  if (error) return <div className="error">Error: {error}</div>;
+  if (isLoading) return <div className={styles.loading}>Loading students...</div>;
+  if (error) return <div className={styles.error}>Error: {error}</div>;
 
   return (
-    <div className="students-section">
+    <div className={styles.studentsSection}>
       <h2>All Students</h2>
       {students.length === 0 ? (
         <p>No students found.</p>
       ) : (
-        <div className="students-table-container">
-          <table className="students-table">
+        <div className={styles.studentsTableContainer}>
+          <table className={styles.studentsTable}>
             <thead>
               <tr>
                 <th>Name</th>
