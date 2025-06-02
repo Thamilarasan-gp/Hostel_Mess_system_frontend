@@ -1,0 +1,231 @@
+.footer {
+  background: linear-gradient(180deg, #1a103c 0%, #120b2e 100%);
+  padding: 40px 20px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated background elements */
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(239, 71, 111, 0.1);
+  filter: blur(20px);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.logoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #ffffff, #ef476f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gridIcon {
+  display: grid;
+  grid-template-columns: repeat(3, 10px);
+  gap: 10px;
+  transform: rotate(45deg);
+  margin: 15px 0;
+}
+
+.square {
+  width: 10px;
+  height: 10px;
+  background-color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.square:nth-child(odd) {
+  background-color: #ef476f;
+}
+
+.linksSection {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+  text-align: left;
+  width: 100%;
+}
+
+.linksSection > div {
+  min-width: 120px;
+}
+
+.linksSection h4 {
+  font-size: 1rem;
+  margin-bottom: 15px;
+  position: relative;
+  display: inline-block;
+}
+
+.linksSection h4::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 30px;
+  height: 2px;
+  background: #ef476f;
+}
+
+.linksSection a {
+  display: block;
+  text-decoration: none;
+  color: #ffffff;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  padding: 5px 0;
+}
+
+.linksSection a:hover {
+  color: #ef476f;
+  transform: translateX(5px);
+}
+
+.bottom {
+  margin-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: #ffffff;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bottom a {
+  color: #ffffff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.bottom a:hover {
+  color: #ef476f;
+}
+
+/* Innovative Mobile Styles */
+@media (max-width: 768px) {
+  .footer {
+    padding: 40px 15px 30px;
+  }
+  
+  .footer::before {
+    width: 150px;
+    height: 150px;
+    top: -70px;
+    right: -70px;
+  }
+  
+  .content {
+    gap: 30px;
+  }
+  
+  .logo {
+    font-size: 1.8rem;
+  }
+  
+  .logoSection {
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+  }
+  
+  .gridIcon {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: rotate(45deg) scale(1.2);
+    margin-left: -60px;
+    width: 10px;
+    height: 10px;
+  }
+  
+  .linksSection {
+    flex-direction: column;
+    gap: 30px;
+    text-align: center;
+  }
+  
+  .linksSection > div {
+    width: 100%;
+    max-width: none;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+  }
+  
+  .linksSection h4 {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+  
+  .linksSection h4::after {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+  }
+  
+  .linksSection a {
+    padding: 8px 0;
+    font-size: 1rem;
+  }
+  
+  .bottom {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
+    padding-top: 20px;
+  }
+  
+  .bottom p {
+    margin: 0;
+  }
+  
+  .bottom p:last-child {
+    margin-bottom: 15px;
+  }
+}
+
+/* Interactive Animations */
+@media (hover: hover) {
+  .square:hover {
+    transform: scale(1.5);
+    background-color: #ef476f !important;
+  }
+}

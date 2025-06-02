@@ -47,7 +47,7 @@ const LoginMess = () => {
     <div className="auth-container">
       <div className="auth-form-container">
         <div className="auth-header">
-          <div className="logo">YourLogo</div>
+          <div className="logo">Mess Mate</div>
           <h1>Welcome back</h1>
           <p className="subtext">Log in to your mess account</p>
         </div>

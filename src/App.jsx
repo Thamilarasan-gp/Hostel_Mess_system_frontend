@@ -15,17 +15,22 @@ import FoodList from "./MessStaff/FoodList";
 import AddReview from "./MessStaff/AddReview";
 import ReviewList from "./Students/ReviewList";
 import AddMess from "./warden/AddMess";
-import MessDashboard from "./MessStaff/MessDashboard";
+import MessDashboard from "./MessStaff/MessDashboard/MessDashboard";
 import LoginMess from "./Auth/LoginMess";
 import GetFoodItems from "./Students/GetFoodItems";
 import ReviewStatus from "./Students/ReviewStatus";
 import Admin from "./warden/Admin";
+import Homepage from "./Homepage/Homepage";
+import './App.css'; 
+import Dashboard from "./warden/WardenDashboard";
+import IntroDashboard from "./Homepage/Dashboard";
+import WardenLogin from "./Auth/WardenLogin";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Signup />} />
-      <Route path="/Login" element={<Login/>} />
+      <Route path="/wardenSigup" element={<Signup />} />
+      <Route path="/wardenLogin" element={<WardenLogin/>} />
       <Route path="/Wardendash" element={<WardenDashboard/>} />
       <Route path="/issuetoken" element={<IssueToken/>} />
       <Route path="/qr" element={<QRGenerate/>} />
@@ -39,14 +44,16 @@ function App() {
       <Route path="/add-review/:foodItemId" element={<AddReview />} />
 
       <Route path="/messLogin" element={<LoginMess/>}/>
-   <Route path="/mess-dashboard" element={<MessDashboard/>}/>
+   <Route path="/messdash" element={<MessDashboard/>}/>
    <Route path="/add-timetable" element={<AddTimetable />} />
     <Route path="/add-food" element={<AddFood />} />
    <Route path="/reviews/:foodItemId" element={<ReviewList />} />
      <Route path="/getfooditems" element={<GetFoodItems/>}/>
        <Route path="/reviewsstatus/:foodItemId" element={<ReviewStatus/>} />
        <Route path="/adminhome" element={<Admin/>}/>
-    
+      <Route path="/" element={<Homepage/>}/>
+         <Route path="/login" element={<Login/>}/>
+        <Route path="/dash" element={<IntroDashboard/>}/>
       <Route path="*" element={<NotFound/>} />
     </Routes>
   );

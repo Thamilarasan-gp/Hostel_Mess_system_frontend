@@ -1,0 +1,302 @@
+/* Dashboard.module.css */
+
+.dashboard {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #251c45 0%, #21135a 100%);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.dashboard.animateIn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.logo {
+  font-size: 2.5rem;
+  font-weight: 800;
+ 
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+ background-color: rgb(255, 255, 255);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.greeting {
+  color: #ffffff;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+.container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  gap: 2rem;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  position: relative;
+  z-index: 2;
+}
+
+.imageSection {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  border-radius: 60px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  margin-left: 50px;
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+}
+
+.floatAnimation {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.buttonsSection {
+  flex: 1;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.subtitle {
+  font-size: 1.8rem;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #4a6fa5, #6b8cce);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.description {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.roleButton {
+  width: 100%;
+  padding: 1.2rem 1.5rem;
+  background: #ffffff;
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.roleButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #4a6fa5, #6b8cce);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.3s ease;
+}
+
+.roleButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.roleButton:hover::before {
+  transform: scaleY(1);
+}
+
+.roleButton.active {
+  background: #f8fafc;
+}
+
+.buttonIcon {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background: #f1f5f9;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.roleButton:hover .buttonIcon {
+  background: #e2e8f0;
+  transform: scale(1.1);
+}
+
+.buttonIcon svg {
+  color: #4a6fa5;
+}
+
+.buttonText {
+  font-size: 1.1rem;
+  color: #1e293b;
+  font-weight: 600;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.buttonArrow {
+  color: #94a3b8;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.roleButton:hover .buttonArrow {
+  color: #4a6fa5;
+  transform: translateX(4px);
+}
+
+.footerNote {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #64748b;
+  text-align: center;
+}
+
+.highlight {
+  color: #4a6fa5;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Decorative elements */
+.circleDecoration {
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: rgba(106, 140, 206, 0.1);
+  z-index: 1;
+}
+
+.triangleDecoration {
+  position: absolute;
+  bottom: -50px;
+  left: -50px;
+  width: 200px;
+  height: 200px;
+  background: rgba(74, 111, 165, 0.1);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  z-index: 1;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .imageSection, .buttonsSection {
+    width: 100%;
+  }
+  
+  .image {
+    height: 250px;
+  }
+  
+  .logo {
+    font-size: 2rem;
+
+  }
+  
+  .subtitle {
+    font-size: 1.5rem;
+  }
+  
+  .buttonsSection {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 1.5rem;
+  }
+  
+  .logo {
+    font-size: 1.8rem;
+  }
+  
+  .subtitle {
+    font-size: 1.3rem;
+  }
+  
+  .roleButton {
+    padding: 1rem;
+  }
+  
+  .buttonText {
+    font-size: 1rem;
+  }
+  
+  .circleDecoration {
+    top: -150px;
+    right: -150px;
+    width: 250px;
+    height: 250px;
+  }
+}
